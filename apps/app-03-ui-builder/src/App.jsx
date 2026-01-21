@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Sparkles, Code, Eye, Wand2, Layout, Zap, Copy } from 'lucide-react'
+import { Code2, Eye, Layers, Terminal, Play, FileCode } from 'lucide-react'
 import ComponentGenerator from './components/ComponentGenerator'
 import LivePreview from './components/LivePreview'
 import CodeExport from './components/CodeExport'
@@ -12,9 +12,7 @@ function App() {
 
   const handleGenerate = async (component) => {
     setIsGenerating(true)
-    
     await new Promise(resolve => setTimeout(resolve, 800))
-    
     setGeneratedComponent(component)
     setActiveTab('preview')
     setIsGenerating(false)
@@ -23,183 +21,167 @@ function App() {
   const templates = getAllTemplates()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500">
-      <div className="min-h-screen backdrop-blur-sm bg-white/10">
-        <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-          {/* Header */}
-          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 sm:p-8 mb-6 border border-white/20">
-            <div className="flex items-center gap-4 mb-3">
-              <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl shadow-lg">
-                <Wand2 className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                  AI Component Builder
-                </h1>
-                <p className="text-gray-600 text-sm sm:text-base">
-                  Transform ideas into beautiful React components instantly
-                </p>
-              </div>
+    <div className="h-screen bg-white flex flex-col overflow-hidden">
+      {/* Top Bar - VS Code Style */}
+      <div className="bg-gray-800 text-white px-4 py-2 flex items-center justify-between border-b border-gray-700">
+        <div className="flex items-center gap-3">
+          <Code2 className="w-5 h-5 text-emerald-400" />
+          <span className="font-mono text-sm font-semibold">UI Builder Studio</span>
+          <span className="text-xs text-gray-400 font-mono">v1.0.0</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 text-xs font-mono">
+            <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+            <span className="text-emerald-400">READY</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Split View */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* LEFT PANEL - Component List & Generator */}
+        <div className="w-80 bg-gray-800 border-r border-gray-700 flex flex-col overflow-hidden">
+          {/* Panel Header */}
+          <div className="bg-gray-900 px-4 py-3 border-b border-gray-700">
+            <div className="flex items-center gap-2 text-white">
+              <Layers className="w-4 h-4 text-emerald-400" />
+              <span className="font-mono text-sm font-semibold uppercase tracking-wide">Explorer</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Left Sidebar */}
-            <div className="lg:col-span-1 space-y-6">
-              <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 border border-white/20">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-2 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg">
-                    <Code className="w-5 h-5 text-white" />
-                  </div>
-                  <h2 className="text-xl font-bold text-gray-800">Generate</h2>
-                </div>
-                <ComponentGenerator 
-                  onGenerate={handleGenerate}
-                  isLoading={isGenerating}
-                />
-              </div>
-
-              {/* Template Library */}
-              <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 border border-white/20">
-                <div className="flex items-center gap-2 mb-4">
-                  <Layout className="w-5 h-5 text-purple-600" />
-                  <h3 className="font-bold text-lg text-gray-800">Templates</h3>
-                </div>
-                <div className="space-y-2">
-                  {templates.slice(0, 6).map((template) => (
-                    <button
-                      key={template.key}
-                      onClick={() => handleGenerate({
-                        code: template.code,
-                        description: template.description,
-                        example: template.example,
-                        dependencies: ['react'],
-                      })}
-                      className="w-full text-left p-3 bg-gradient-to-r from-purple-50 to-indigo-50 hover:from-purple-100 hover:to-indigo-100 rounded-xl transition-all border border-purple-200 hover:border-purple-400 hover:shadow-md group"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="font-bold text-sm text-gray-800 group-hover:text-purple-600 transition-colors">
-                            {template.name}
-                          </div>
-                          <div className="text-xs text-gray-600 mt-1">
-                            {template.description}
-                          </div>
-                        </div>
-                        <Sparkles className="w-4 h-4 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
+          {/* Generator Section */}
+          <div className="p-4 border-b border-gray-700">
+            <div className="mb-3 flex items-center gap-2">
+              <Terminal className="w-4 h-4 text-green-400" />
+              <span className="text-xs font-mono text-gray-300 font-semibold uppercase">Generate</span>
             </div>
+            <ComponentGenerator 
+              onGenerate={handleGenerate}
+              isLoading={isGenerating}
+            />
+          </div>
 
-            {/* Main Content */}
-            <div className="lg:col-span-3">
-              {/* Tabs */}
-              <div className="bg-white/95 backdrop-blur-md rounded-t-2xl shadow-2xl border border-white/20 border-b-0 overflow-hidden">
-                <div className="flex">
-                  <button
-                    onClick={() => setActiveTab('preview')}
-                    className={`flex-1 px-6 py-4 font-bold flex items-center justify-center gap-2 transition-all ${
-                      activeTab === 'preview'
-                        ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg'
-                        : 'text-gray-600 hover:bg-white/50'
-                    }`}
-                  >
-                    <Eye className="w-5 h-5" />
-                    <span>Live Preview</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('code')}
-                    className={`flex-1 px-6 py-4 font-bold flex items-center justify-center gap-2 transition-all ${
-                      activeTab === 'code'
-                        ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg'
-                        : 'text-gray-600 hover:bg-white/50'
-                    }`}
-                  >
-                    <Code className="w-5 h-5" />
-                    <span>Source Code</span>
-                  </button>
+          {/* Template List */}
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="mb-3 flex items-center gap-2">
+              <FileCode className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs font-mono text-gray-300 font-semibold uppercase">Templates</span>
+            </div>
+            <div className="space-y-1">
+              {templates.map((template) => (
+                <button
+                  key={template.key}
+                  onClick={() => handleGenerate({
+                    code: template.code,
+                    description: template.description,
+                    example: template.example,
+                    dependencies: ['react'],
+                  })}
+                  className="w-full text-left px-3 py-2 text-gray-300 hover:bg-gray-700 rounded font-mono text-xs transition-colors group flex items-center gap-2"
+                >
+                  <Code2 className="w-3 h-3 text-emerald-400 opacity-60 group-hover:opacity-100" />
+                  <div className="flex-1 min-w-0">
+                    <div className="truncate font-semibold">{template.name}</div>
+                    <div className="text-[10px] text-gray-500 truncate">{template.description}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT PANEL - Preview/Code Editor */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Tab Bar */}
+          <div className="bg-gray-800 border-b border-gray-700 flex items-center">
+            <button
+              onClick={() => setActiveTab('preview')}
+              className={`px-6 py-2.5 font-mono text-xs font-semibold flex items-center gap-2 border-r border-gray-700 transition-colors ${
+                activeTab === 'preview'
+                  ? 'bg-white text-gray-900'
+                  : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+              }`}
+            >
+              <Eye className="w-4 h-4" />
+              <span>PREVIEW</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('code')}
+              className={`px-6 py-2.5 font-mono text-xs font-semibold flex items-center gap-2 border-r border-gray-700 transition-colors ${
+                activeTab === 'code'
+                  ? 'bg-gray-900 text-emerald-400'
+                  : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+              }`}
+            >
+              <Code2 className="w-4 h-4" />
+              <span>CODE</span>
+            </button>
+            {generatedComponent && (
+              <div className="ml-auto px-4 flex items-center gap-2">
+                <Play className="w-3 h-3 text-green-400" />
+                <span className="text-[10px] font-mono text-green-400 font-semibold">COMPILED</span>
+              </div>
+            )}
+          </div>
+
+          {/* Content Area */}
+          <div className={`flex-1 overflow-auto ${activeTab === 'preview' ? 'bg-white' : 'bg-gray-900'}`}>
+            {!generatedComponent ? (
+              <div className="h-full flex flex-col items-center justify-center">
+                <div className="text-center max-w-md">
+                  <div className="w-20 h-20 bg-gray-800 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <Code2 className="w-10 h-10 text-emerald-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2 font-mono">No Component Selected</h2>
+                  <p className="text-gray-500 text-sm font-mono">
+                    Generate a component or select a template from the explorer
+                  </p>
                 </div>
               </div>
-
-              {/* Tab Content */}
-              <div className="bg-white/95 backdrop-blur-md rounded-b-2xl shadow-2xl p-6 border border-white/20 min-h-[600px]">
-                {!generatedComponent ? (
-                  <div className="h-[550px] flex flex-col items-center justify-center text-gray-400">
-                    <div className="p-6 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full mb-6">
-                      <Sparkles className="w-20 h-20 text-purple-400" />
+            ) : (
+              <>
+                {activeTab === 'preview' && (
+                  <div className="p-6">
+                    <div className="mb-4 px-4 py-2 bg-emerald-50 border-l-4 border-emerald-500 flex items-center gap-2">
+                      <Play className="w-4 h-4 text-emerald-600" />
+                      <span className="text-xs font-mono text-emerald-900 font-semibold">LIVE PREVIEW</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-600 mb-2">Ready to Create Magic?</p>
-                    <p className="text-base text-gray-500">
-                      Describe a component or choose a template to begin
-                    </p>
+                    <LivePreview 
+                      code={generatedComponent.code}
+                      example={generatedComponent.example}
+                    />
                   </div>
-                ) : (
-                  <>
-                    {activeTab === 'preview' && (
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200">
-                          <div className="flex items-center gap-2">
-                            <Zap className="w-5 h-5 text-purple-600" />
-                            <span className="font-bold text-gray-800">Interactive Preview</span>
-                          </div>
-                          <div className="flex gap-2">
-                            <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">
-                              Live
-                            </span>
-                          </div>
-                        </div>
-                        <LivePreview 
-                          code={generatedComponent.code}
-                          example={generatedComponent.example}
-                        />
-                      </div>
-                    )}
-                    {activeTab === 'code' && (
-                      <CodeExport 
-                        code={generatedComponent.code}
-                        description={generatedComponent.description}
-                      />
-                    )}
-                  </>
                 )}
-              </div>
-
-              {/* Component Info */}
-              {generatedComponent && (
-                <div className="mt-6 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 border border-white/20">
-                  <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <h3 className="font-bold text-lg text-gray-800 mb-2 flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-purple-600" />
-                        Component Details
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {generatedComponent.description}
-                      </p>
-                    </div>
-                    {generatedComponent.dependencies && (
-                      <div className="text-left sm:text-right">
-                        <div className="text-xs text-gray-500 mb-2 font-semibold">Dependencies:</div>
-                        <div className="flex flex-wrap gap-2">
-                          {generatedComponent.dependencies.map((dep, idx) => (
-                            <span
-                              key={idx}
-                              className="text-xs px-3 py-1 bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-700 rounded-full font-bold border border-purple-200"
-                            >
-                              {dep}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                {activeTab === 'code' && (
+                  <div className="h-full">
+                    <CodeExport 
+                      code={generatedComponent.code}
+                      description={generatedComponent.description}
+                    />
                   </div>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Bottom Status Bar */}
+          {generatedComponent && (
+            <div className="bg-gray-800 border-t border-gray-700 px-4 py-2 flex items-center justify-between text-xs font-mono">
+              <div className="flex items-center gap-4 text-gray-400">
+                <span>{generatedComponent.description}</span>
+              </div>
+              {generatedComponent.dependencies && (
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-500">Dependencies:</span>
+                  {generatedComponent.dependencies.map((dep, idx) => (
+                    <span key={idx} className="px-2 py-0.5 bg-emerald-900/50 text-emerald-400 rounded text-[10px] font-bold">
+                      {dep}
+                    </span>
+                  ))}
                 </div>
               )}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Mic, MicOff, Volume2, VolumeX, MessageCircle, AlertCircle, Send, Sparkles, Bot, User } from 'lucide-react'
+import { Mic, Volume2, VolumeX, AlertCircle } from 'lucide-react'
 import VoiceInput from './components/VoiceInput'
 import AudioWaveform from './components/AudioWaveform'
 import { VoiceProcessor } from './lib/speech'
-import { sendMessage, conversationHistory } from './lib/conversation'
+import { sendMessage } from './lib/conversation'
 
 function App() {
   const [isRecording, setIsRecording] = useState(false)
@@ -81,135 +81,135 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
-      <div className="min-h-screen backdrop-blur-sm bg-white/10 flex items-center justify-center p-4 sm:p-6">
-        <div className="max-w-4xl w-full bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-white/20 backdrop-blur-sm rounded-xl">
-                  <MessageCircle className="w-8 h-8 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600 relative overflow-hidden">
+      {/* Radial Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-radial from-purple-400/30 via-transparent to-transparent"></div>
+      
+      <div className="relative min-h-screen flex flex-col items-center justify-center p-4">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-bold text-white mb-2 drop-shadow-lg">Voice Chat</h1>
+          <p className="text-white/90 text-lg">Speak to interact with AI</p>
+        </div>
+
+        {/* Central Circular Mic Area */}
+        <div className="relative mb-8">
+          {/* Outer Glow Ring */}
+          <div className={`absolute inset-0 rounded-full blur-2xl transition-all duration-300 ${
+            isRecording ? 'bg-yellow-300 animate-pulse scale-150' : 'bg-white/20 scale-125'
+          }`}></div>
+          
+          {/* Waveform Circle */}
+          <div className="relative">
+            <div className={`w-64 h-64 rounded-full flex items-center justify-center transition-all duration-300 ${
+              isRecording 
+                ? 'bg-gradient-to-br from-yellow-400 to-yellow-500 shadow-2xl shadow-yellow-500/50 scale-105' 
+                : isSpeaking
+                ? 'bg-gradient-to-br from-green-400 to-emerald-500 shadow-2xl shadow-green-500/50 scale-105'
+                : 'bg-gradient-to-br from-white to-gray-100 shadow-xl'
+            }`}>
+              {/* Inner Waveform Ring */}
+              {(isRecording || isSpeaking) && (
+                <div className="absolute inset-8">
+                  <AudioWaveform isActive={isRecording || isSpeaking} />
                 </div>
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-white">
-                    Voice AI Chat
-                  </h1>
-                  <p className="text-white/80 text-sm">
-                    Speak naturally, get intelligent responses
-                  </p>
-                </div>
-              </div>
+              )}
+              
+              {/* Mic Button */}
               <button
-                onClick={() => setAutoSpeak(!autoSpeak)}
-                className={`p-3 rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:scale-105 ${
-                  autoSpeak 
-                    ? 'bg-green-500 hover:bg-green-600' 
-                    : 'bg-red-500 hover:bg-red-600'
+                onClick={isRecording ? handleStopRecording : handleStartRecording}
+                className={`w-40 h-40 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 ${
+                  isRecording 
+                    ? 'bg-red-500 hover:bg-red-600 shadow-xl' 
+                    : 'bg-purple-500 hover:bg-purple-600 shadow-xl'
                 }`}
-                title={autoSpeak ? 'Auto-speak enabled' : 'Auto-speak disabled'}
               >
-                {autoSpeak ? <Volume2 className="w-6 h-6 text-white" /> : <VolumeX className="w-6 h-6 text-white" />}
+                <Mic className={`w-20 h-20 text-white ${isRecording ? 'animate-pulse' : ''}`} />
               </button>
             </div>
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="mx-6 mt-4 p-4 bg-red-50 border-2 border-red-300 rounded-xl flex items-center gap-3">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <AlertCircle className="w-5 h-5 text-red-600" />
-              </div>
-              <div>
-                <div className="font-bold text-red-800">Error</div>
-                <div className="text-red-700 text-sm">{error}</div>
-              </div>
-            </div>
-          )}
+          {/* Audio Toggle - Floating */}
+          <button
+            onClick={() => setAutoSpeak(!autoSpeak)}
+            className={`absolute -right-4 top-1/2 -translate-y-1/2 p-4 rounded-full shadow-xl transition-all transform hover:scale-110 ${
+              autoSpeak 
+                ? 'bg-white text-purple-600 hover:bg-gray-100' 
+                : 'bg-gray-800 text-white hover:bg-gray-700'
+            }`}
+            title={autoSpeak ? 'Audio enabled' : 'Audio disabled'}
+          >
+            {autoSpeak ? <Volume2 className="w-6 h-6" /> : <VolumeX className="w-6 h-6" />}
+          </button>
+        </div>
 
-          {/* Chat Area */}
-          <div className="h-[500px] overflow-y-auto p-6 space-y-4">
-            {conversation.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-gray-400">
-                <div className="p-8 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full mb-6">
-                  <Mic className="w-20 h-20 text-indigo-400" />
-                </div>
-                <p className="text-2xl font-bold text-gray-600 mb-2">Ready to Chat!</p>
-                <p className="text-base text-gray-500 text-center max-w-md">
-                  Press the microphone button to speak or type your message below
-                </p>
-              </div>
-            ) : (
-              conversation.map((message, index) => (
+        {/* Recording Status */}
+        {isRecording && (
+          <div className="bg-yellow-300 text-yellow-900 px-6 py-3 rounded-full font-bold shadow-lg mb-4 animate-pulse">
+            🎙️ Listening...
+          </div>
+        )}
+        {isSpeaking && (
+          <div className="bg-green-300 text-green-900 px-6 py-3 rounded-full font-bold shadow-lg mb-4 animate-pulse">
+            🔊 Speaking...
+          </div>
+        )}
+
+        {/* Transcript Display */}
+        {transcript && isRecording && (
+          <div className="max-w-2xl bg-white/95 backdrop-blur rounded-2xl px-6 py-4 shadow-xl mb-4">
+            <p className="text-gray-800 text-center italic">"{transcript}"</p>
+          </div>
+        )}
+
+        {/* Error */}
+        {error && (
+          <div className="max-w-2xl bg-red-500 text-white px-6 py-4 rounded-2xl shadow-xl mb-4 flex items-center gap-3">
+            <AlertCircle className="w-6 h-6" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* Messages Below - Circular Cards */}
+        <div className="w-full max-w-3xl space-y-4 max-h-80 overflow-y-auto px-4">
+          {conversation.length === 0 ? (
+            <div className="text-center text-white/80 py-8">
+              <p className="text-xl font-medium">Press the mic to start</p>
+              <p className="text-sm mt-2">Your conversation will appear here</p>
+            </div>
+          ) : (
+            conversation.map((message, index) => (
+              <div
+                key={index}
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
                 <div
-                  key={index}
-                  className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`max-w-sm px-6 py-4 rounded-3xl shadow-lg ${
+                    message.role === 'user'
+                      ? 'bg-white text-gray-800'
+                      : 'bg-gradient-to-br from-pink-400 to-purple-500 text-white'
+                  }`}
                 >
-                  {message.role === 'assistant' && (
-                    <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
-                      <Bot className="w-6 h-6 text-white" />
-                    </div>
-                  )}
-                  <div
-                    className={`max-w-[70%] px-5 py-3 rounded-2xl shadow-md ${
-                      message.role === 'user'
-                        ? 'bg-gradient-to-br from-indigo-500 to-purple-500 text-white rounded-br-sm'
-                        : 'bg-white border-2 border-gray-200 text-gray-800 rounded-bl-sm'
-                    }`}
-                  >
-                    <div className="text-sm font-medium mb-1 opacity-80">
-                      {message.role === 'user' ? 'You' : 'AI Assistant'}
-                    </div>
-                    <div className="text-base leading-relaxed">
-                      {message.content}
-                    </div>
+                  <div className="text-xs font-bold mb-1 opacity-75">
+                    {message.role === 'user' ? '🎤 You' : '🤖 AI'}
                   </div>
-                  {message.role === 'user' && (
-                    <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full flex items-center justify-center">
-                      <User className="w-6 h-6 text-white" />
-                    </div>
-                  )}
-                </div>
-              ))
-            )}
-            {isSpeaking && (
-              <div className="flex gap-3 justify-start">
-                <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
-                  <Bot className="w-6 h-6 text-white" />
-                </div>
-                <div className="px-5 py-3 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-2xl rounded-bl-sm flex items-center gap-3">
-                  <Volume2 className="w-5 h-5 text-yellow-700 animate-pulse" />
-                  <span className="text-yellow-800 font-medium">AI is speaking...</span>
+                  <div className="text-base leading-relaxed">
+                    {message.content}
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
-
-          {/* Recording Indicator */}
-          {isRecording && (
-            <div className="mx-6 mb-4 p-4 bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-300 rounded-xl">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                <span className="font-bold text-red-800">Recording...</span>
-              </div>
-              <AudioWaveform isActive={isRecording} />
-              {transcript && (
-                <p className="mt-3 text-sm text-red-800 font-medium p-3 bg-white/50 rounded-lg">
-                  {transcript}
-                </p>
-              )}
-            </div>
+            ))
           )}
+        </div>
 
-          {/* Voice Input */}
-          <div className="p-6 bg-gray-50 border-t-2 border-gray-200">
-            <VoiceInput
-              isRecording={isRecording}
-              onStartRecording={handleStartRecording}
-              onStopRecording={handleStopRecording}
-              onTextSubmit={handleTextSubmit}
-            />
-          </div>
+        {/* Text Input Alternative - Below messages */}
+        <div className="mt-8 w-full max-w-2xl">
+          <VoiceInput
+            isRecording={isRecording}
+            onStartRecording={handleStartRecording}
+            onStopRecording={handleStopRecording}
+            onTextSubmit={handleTextSubmit}
+          />
         </div>
       </div>
     </div>

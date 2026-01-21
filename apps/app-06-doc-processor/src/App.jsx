@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import { FileText, Upload, X, FileCheck, Sparkles, MessageCircle, Zap, BarChart3 } from 'lucide-react'
+import { FileText, Upload, X, FileCheck, Folder, File, ChevronRight, Eye } from 'lucide-react'
 
 function App() {
-  const [document, setDocument] = useState(null)
+  const [documents, setDocuments] = useState([])
+  const [selectedDoc, setSelectedDoc] = useState(null)
   const [analysis, setAnalysis] = useState(null)
   const [loading, setLoading] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
@@ -13,27 +14,28 @@ function App() {
     if (!file) return
     
     setLoading(true)
-    setAnalysis(null)
-    setAnswer(null)
 
     // Simulate processing
     await new Promise(resolve => setTimeout(resolve, 1500))
 
     const mockText = "This is a sample document about artificial intelligence and machine learning. It discusses neural networks, deep learning algorithms, and their applications in natural language processing. The document covers topics like transformers, attention mechanisms, and recent advances in AI technology."
 
-    setDocument({
+    const newDoc = {
+      id: Date.now(),
       name: file.name,
       type: file.type,
       size: file.size,
       text: mockText,
       uploadedAt: Date.now()
-    })
+    }
+
+    setDocuments(prev => [...prev, newDoc])
+    setSelectedDoc(newDoc)
 
     // Auto-analyze
     const mockAnalysis = {
       summary: "This document provides a comprehensive overview of artificial intelligence and machine learning technologies, focusing on neural networks and their modern applications.",
       topics: ["Artificial Intelligence", "Machine Learning", "Neural Networks", "Natural Language Processing"],
-      sentiment: "Informative",
       wordCount: 52,
       keyPhrases: ["artificial intelligence", "machine learning", "neural networks", "deep learning", "transformers"]
     }
@@ -59,143 +61,192 @@ function App() {
   }
 
   const handleAskQuestion = async () => {
-    if (!question.trim() || !document) return
+    if (!question.trim() || !selectedDoc) return
     setLoading(true)
     await new Promise(resolve => setTimeout(resolve, 1000))
     setAnswer(`Based on the document, ${question.toLowerCase().includes('what') ? 'it discusses' : 'the answer is related to'} artificial intelligence and machine learning concepts. The document covers neural networks, deep learning algorithms, and their applications in natural language processing.`)
     setLoading(false)
   }
 
-  const handleReset = () => {
-    setDocument(null)
-    setAnalysis(null)
-    setAnswer(null)
+  const handleRemoveDoc = (docId) => {
+    setDocuments(prev => prev.filter(d => d.id !== docId))
+    if (selectedDoc?.id === docId) {
+      setSelectedDoc(null)
+      setAnalysis(null)
+      setAnswer(null)
+      setQuestion('')
+    }
+  }
+
+  const handleSelectDoc = (doc) => {
+    setSelectedDoc(doc)
     setQuestion('')
+    setAnswer(null)
+    // Re-run analysis
+    const mockAnalysis = {
+      summary: "This document provides a comprehensive overview of artificial intelligence and machine learning technologies, focusing on neural networks and their modern applications.",
+      topics: ["Artificial Intelligence", "Machine Learning", "Neural Networks", "Natural Language Processing"],
+      wordCount: 52,
+      keyPhrases: ["artificial intelligence", "machine learning", "neural networks", "deep learning", "transformers"]
+    }
+    setAnalysis(mockAnalysis)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl">
-              <FileText className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-white">AI Document Processor</h1>
+    <div className="min-h-screen bg-slate-100 flex flex-col">
+      {/* macOS-style Header Bar */}
+      <div className="bg-white border-b border-slate-200 px-4 py-3 shadow-sm">
+        <div className="flex items-center gap-3">
+          <Folder className="w-5 h-5 text-indigo-600" />
+          <h1 className="text-lg font-semibold text-slate-800">Document Processor</h1>
+          <div className="ml-auto">
+            <label className="cursor-pointer">
+              <input
+                type="file"
+                className="hidden"
+                accept=".pdf,.txt,.doc,.docx"
+                onChange={(e) => handleFileUpload(e.target.files[0])}
+                disabled={loading}
+              />
+              <span className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-all shadow-sm">
+                {loading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4" />
+                    Add File
+                  </>
+                )}
+              </span>
+            </label>
           </div>
-          <p className="text-white/90 text-lg">Upload, analyze, and extract insights from your documents</p>
+        </div>
+      </div>
+
+      {/* Main Content Area - Finder Style */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left Sidebar - File List */}
+        <div className="w-64 bg-slate-50 border-r border-slate-200 overflow-y-auto">
+          {/* Sidebar Header */}
+          <div className="px-4 py-3 border-b border-slate-200">
+            <div className="flex items-center gap-2 text-slate-600 text-xs font-semibold uppercase tracking-wider">
+              <Folder className="w-4 h-4" />
+              Documents
+            </div>
+          </div>
+
+          {/* File List */}
+          <div className="p-2">
+            {documents.length === 0 ? (
+              <div className="px-4 py-8 text-center text-slate-400 text-sm">
+                No documents yet
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {documents.map((doc) => (
+                  <div
+                    key={doc.id}
+                    onClick={() => handleSelectDoc(doc)}
+                    className={`group flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-all ${
+                      selectedDoc?.id === doc.id
+                        ? 'bg-indigo-600 text-white'
+                        : 'text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <File className="w-4 h-4 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">{doc.name}</div>
+                      <div className={`text-xs ${selectedDoc?.id === doc.id ? 'text-indigo-200' : 'text-slate-500'}`}>
+                        {(doc.size / 1024).toFixed(1)} KB
+                      </div>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleRemoveDoc(doc.id)
+                      }}
+                      className={`opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-slate-300 transition-all ${
+                        selectedDoc?.id === doc.id ? 'hover:bg-indigo-700' : ''
+                      }`}
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Upload Area */}
-        {!document ? (
-          <div className="bg-white rounded-2xl shadow-2xl p-8">
+        {/* Right Preview Panel */}
+        <div className="flex-1 overflow-y-auto">
+          {!selectedDoc ? (
             <div
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
-              className={`border-4 border-dashed rounded-2xl p-12 text-center transition-all ${
-                isDragging ? 'border-purple-500 bg-purple-50' : 'border-gray-300 bg-gray-50'
+              className={`h-full flex flex-col items-center justify-center p-8 transition-all ${
+                isDragging ? 'bg-indigo-50' : ''
               }`}
             >
-              <div className="flex justify-center mb-6">
-                <div className="p-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full">
-                  <Upload className="w-12 h-12 text-white" />
-                </div>
+              <div className={`p-8 rounded-2xl border-2 border-dashed transition-all ${
+                isDragging ? 'border-indigo-500 bg-indigo-100/50 scale-105' : 'border-slate-300'
+              }`}>
+                <Upload className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+                <p className="text-slate-600 font-medium mb-2 text-center">Drop files here</p>
+                <p className="text-slate-500 text-sm text-center">or use the Add File button</p>
               </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-3">Drop your document here</h3>
-              <p className="text-gray-600 mb-6">or click to browse files</p>
-              <label className="cursor-pointer">
-                <input
-                  type="file"
-                  className="hidden"
-                  accept=".pdf,.txt,.doc,.docx"
-                  onChange={(e) => handleFileUpload(e.target.files[0])}
-                  disabled={loading}
-                />
-                <span className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg">
-                  {loading ? (
-                    <>
-                      <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <FileText className="w-5 h-5" />
-                      Select Document
-                    </>
-                  )}
-                </span>
-              </label>
-              <p className="text-sm text-gray-500 mt-4">Supports PDF, TXT, DOC, DOCX (Max 10MB)</p>
             </div>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {/* Document Info */}
-            <div className="bg-white rounded-2xl shadow-2xl p-6">
-              <div className="flex items-start justify-between mb-6">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl">
-                    <FileCheck className="w-6 h-6 text-white" />
+          ) : (
+            <div className="p-6 space-y-6">
+              {/* Document Header */}
+              <div className="bg-white rounded-lg border border-slate-200 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-indigo-100 rounded-lg">
+                    <FileCheck className="w-5 h-5 text-indigo-600" />
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-800">{document.name}</h3>
-                    <p className="text-gray-600 text-sm mt-1">
-                      {(document.size / 1024).toFixed(2)} KB • Uploaded {new Date(document.uploadedAt).toLocaleTimeString()}
+                  <div className="flex-1">
+                    <h2 className="text-lg font-semibold text-slate-800">{selectedDoc.name}</h2>
+                    <p className="text-sm text-slate-500 mt-1">
+                      {(selectedDoc.size / 1024).toFixed(2)} KB • {new Date(selectedDoc.uploadedAt).toLocaleString()}
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={handleReset}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5 text-gray-600" />
-                </button>
               </div>
 
-              {/* Analysis Results */}
+              {/* Analysis Section */}
               {analysis && (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {/* Summary */}
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+                  <div className="bg-white rounded-lg border border-slate-200 p-5">
                     <div className="flex items-center gap-2 mb-3">
-                      <Sparkles className="w-5 h-5 text-blue-600" />
-                      <h4 className="font-bold text-gray-800 text-lg">AI Summary</h4>
+                      <Eye className="w-4 h-4 text-violet-600" />
+                      <h3 className="font-semibold text-slate-800 text-sm uppercase tracking-wide">Summary</h3>
                     </div>
-                    <p className="text-gray-700 leading-relaxed">{analysis.summary}</p>
+                    <p className="text-slate-700 text-sm leading-relaxed">{analysis.summary}</p>
                   </div>
 
-                  {/* Stats Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
-                      <BarChart3 className="w-5 h-5 text-purple-600 mb-2" />
-                      <div className="text-2xl font-bold text-purple-600">{analysis.wordCount}</div>
-                      <div className="text-sm text-gray-600">Words</div>
+                  {/* Stats Row */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white rounded-lg border border-slate-200 p-4">
+                      <div className="text-2xl font-bold text-indigo-600">{analysis.wordCount}</div>
+                      <div className="text-xs text-slate-600 uppercase tracking-wide mt-1">Words</div>
                     </div>
-                    <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100">
-                      <Zap className="w-5 h-5 text-blue-600 mb-2" />
-                      <div className="text-2xl font-bold text-blue-600">{analysis.topics.length}</div>
-                      <div className="text-sm text-gray-600">Topics</div>
-                    </div>
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
-                      <FileText className="w-5 h-5 text-green-600 mb-2" />
-                      <div className="text-2xl font-bold text-green-600">{analysis.keyPhrases.length}</div>
-                      <div className="text-sm text-gray-600">Key Phrases</div>
-                    </div>
-                    <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl p-4 border border-orange-100">
-                      <Sparkles className="w-5 h-5 text-orange-600 mb-2" />
-                      <div className="text-xl font-bold text-orange-600">{analysis.sentiment}</div>
-                      <div className="text-sm text-gray-600">Sentiment</div>
+                    <div className="bg-white rounded-lg border border-slate-200 p-4">
+                      <div className="text-2xl font-bold text-violet-600">{analysis.topics.length}</div>
+                      <div className="text-xs text-slate-600 uppercase tracking-wide mt-1">Topics</div>
                     </div>
                   </div>
 
                   {/* Topics */}
-                  <div>
-                    <h4 className="font-bold text-gray-800 mb-3">Detected Topics</h4>
+                  <div className="bg-white rounded-lg border border-slate-200 p-5">
+                    <h3 className="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-3">Topics</h3>
                     <div className="flex flex-wrap gap-2">
                       {analysis.topics.map((topic, idx) => (
-                        <span key={idx} className="px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-full text-sm font-medium">
+                        <span key={idx} className="px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-md">
                           {topic}
                         </span>
                       ))}
@@ -203,11 +254,11 @@ function App() {
                   </div>
 
                   {/* Key Phrases */}
-                  <div>
-                    <h4 className="font-bold text-gray-800 mb-3">Key Phrases</h4>
+                  <div className="bg-white rounded-lg border border-slate-200 p-5">
+                    <h3 className="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-3">Key Phrases</h3>
                     <div className="flex flex-wrap gap-2">
                       {analysis.keyPhrases.map((phrase, idx) => (
-                        <span key={idx} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm border border-gray-200">
+                        <span key={idx} className="px-3 py-1.5 bg-slate-100 text-slate-700 text-xs rounded-md border border-slate-200">
                           {phrase}
                         </span>
                       ))}
@@ -215,39 +266,39 @@ function App() {
                   </div>
                 </div>
               )}
-            </div>
 
-            {/* Q&A Section */}
-            <div className="bg-white rounded-2xl shadow-2xl p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <MessageCircle className="w-6 h-6 text-purple-600" />
-                <h3 className="text-xl font-bold text-gray-800">Ask Questions</h3>
-              </div>
-              <div className="flex gap-3 mb-4">
-                <input
-                  type="text"
-                  value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleAskQuestion()}
-                  placeholder="Ask anything about this document..."
-                  className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
-                />
-                <button
-                  onClick={handleAskQuestion}
-                  disabled={loading || !question.trim()}
-                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
-                >
-                  {loading ? 'Thinking...' : 'Ask'}
-                </button>
-              </div>
-              {answer && (
-                <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6 border border-purple-100">
-                  <p className="text-gray-700 leading-relaxed">{answer}</p>
+              {/* Q&A Section */}
+              <div className="bg-white rounded-lg border border-slate-200 p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <ChevronRight className="w-4 h-4 text-violet-600" />
+                  <h3 className="font-semibold text-slate-800 text-sm uppercase tracking-wide">Ask Questions</h3>
                 </div>
-              )}
+                <div className="flex gap-2 mb-4">
+                  <input
+                    type="text"
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleAskQuestion()}
+                    placeholder="Ask about this document..."
+                    className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  />
+                  <button
+                    onClick={handleAskQuestion}
+                    disabled={loading || !question.trim()}
+                    className="px-4 py-2 bg-violet-600 text-white text-sm font-medium rounded-lg hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    {loading ? '...' : 'Ask'}
+                  </button>
+                </div>
+                {answer && (
+                  <div className="bg-violet-50 border border-violet-200 rounded-lg p-4">
+                    <p className="text-slate-700 text-sm leading-relaxed">{answer}</p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )
