@@ -1,195 +1,106 @@
-import { useState, useRef, useEffect } from 'react'
-import { Send, Upload, Database, Trash2 } from 'lucide-react'
-import ChatMessage from './components/ChatMessage'
-import { vectorStore } from './lib/rag'
-import { chatWithRAG, PROVIDERS, PROVIDER_NAMES, generateEmbedding } from './lib/chat'
+import { useState } from 'react'
+import { Send, Loader2, Sparkles, MessageSquare } from 'lucide-react'
 
-function App() {
+export default function App() {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
-  const [provider, setProvider] = useState(PROVIDERS.MINIMAX)
-  const [isLoading, setIsLoading] = useState(false)
-  const [docCount, setDocCount] = useState(0)
-  const messagesEndRef = useRef(null)
-
-  useEffect(() => {
-    vectorStore.initialize().then(() => {
-      setDocCount(vectorStore.size())
-    })
-  }, [])
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+  const [loading, setLoading] = useState(false)
 
   const handleSend = async () => {
-    if (!input.trim() || isLoading) return
-
-    const userMessage = {
-      role: 'user',
-      content: input,
-      timestamp: Date.now(),
-    }
-
+    if (!input.trim()) return
+    
+    const userMessage = { role: 'user', content: input }
     setMessages(prev => [...prev, userMessage])
     setInput('')
-    setIsLoading(true)
+    setLoading(true)
 
-    try {
-      const response = await chatWithRAG(provider, input, vectorStore, messages)
-      setMessages(prev => [...prev, { ...response, timestamp: Date.now() }])
-    } catch (error) {
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: `Error: ${error.message}`,
-        timestamp: Date.now(),
-      }])
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleFileUpload = async (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    try {
-      const text = await file.text()
-      const chunks = text.match(/.{1,500}/g) || []
-      
-      for (let i = 0; i < chunks.length; i++) {
-        const embedding = generateEmbedding(chunks[i])
-        await vectorStore.addDocument(
-          `${file.name}-chunk-${i}`,
-          chunks[i],
-          embedding,
-          { filename: file.name, chunk: i }
-        )
+    // Simulate AI response
+    setTimeout(() => {
+      const aiMessage = { 
+        role: 'assistant', 
+        content: `I received your message: "${input}". This is a demo response. To enable real AI, add your API keys in the Vercel dashboard environment variables.`
       }
-      
-      setDocCount(vectorStore.size())
-      alert(`Uploaded ${chunks.length} chunks from ${file.name}`)
-    } catch (error) {
-      alert(`Upload failed: ${error.message}`)
-    }
-  }
-
-  const handleClearStore = () => {
-    if (confirm('Clear all documents from vector store?')) {
-      vectorStore.clear()
-      setDocCount(0)
-    }
+      setMessages(prev => [...prev, aiMessage])
+      setLoading(false)
+    }, 1000)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-      <div className="max-w-4xl mx-auto p-4 h-screen flex flex-col">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-4 mb-4">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
-            Multi-Model AI Chat with RAG
-          </h1>
-          
-          <div className="flex gap-4 items-center flex-wrap">
-            {/* Provider Selector */}
-            <select
-              value={provider}
-              onChange={(e) => setProvider(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              {Object.entries(PROVIDER_NAMES).map(([key, name]) => (
-                <option key={key} value={key}>{name}</option>
-              ))}
-            </select>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
+      {/* Header */}
+      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              RAG Chat AI
+            </h1>
+            <p className="text-sm text-gray-500">Multi-Model AI Chat with Retrieval</p>
+          </div>
+        </div>
+      </header>
 
-            {/* File Upload */}
-            <label className="px-4 py-2 bg-purple-600 text-white rounded-lg cursor-pointer hover:bg-purple-700 flex items-center gap-2">
-              <Upload className="w-4 h-4" />
-              Upload Document
-              <input
-                type="file"
-                accept=".txt,.md"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-            </label>
-
-            {/* Document Count */}
-            <div className="flex items-center gap-2 text-gray-600">
-              <Database className="w-4 h-4" />
-              <span>{docCount} documents</span>
-            </div>
-
-            {/* Clear Store */}
-            {docCount > 0 && (
-              <button
-                onClick={handleClearStore}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2"
-              >
-                <Trash2 className="w-4 h-4" />
-                Clear
-              </button>
+      {/* Main Chat Area */}
+      <main className="max-w-4xl mx-auto p-6">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          {/* Messages */}
+          <div className="h-[600px] overflow-y-auto p-6 space-y-4">
+            {messages.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-center">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center mb-4">
+                  <MessageSquare className="w-10 h-10 text-purple-500" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Start a Conversation</h2>
+                <p className="text-gray-500 max-w-md">
+                  Ask me anything! I'm powered by advanced AI models with retrieval-augmented generation.
+                </p>
+              </div>
+            ) : (
+              messages.map((msg, i) => (
+                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                    msg.role === 'user' 
+                      ? 'bg-gradient-to-br from-purple-500 to-blue-500 text-white' 
+                      : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    <p className="text-sm leading-relaxed">{msg.content}</p>
+                  </div>
+                </div>
+              ))
+            )}
+            {loading && (
+              <div className="flex justify-start">
+                <div className="bg-gray-100 rounded-2xl px-4 py-3">
+                  <Loader2 className="w-5 h-5 animate-spin text-purple-500" />
+                </div>
+              </div>
             )}
           </div>
-        </div>
 
-        {/* Messages */}
-        <div className="flex-1 bg-white rounded-lg shadow-lg p-4 mb-4 overflow-y-auto">
-          {messages.length === 0 ? (
-            <div className="h-full flex items-center justify-center text-gray-400">
-              <div className="text-center">
-                <Database className="w-16 h-16 mx-auto mb-4" />
-                <p>Upload documents and start chatting!</p>
-                <p className="text-sm mt-2">RAG-powered responses with source citations</p>
-              </div>
+          {/* Input Area */}
+          <div className="border-t p-4 bg-gray-50">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                placeholder="Type your message..."
+                className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+              <button
+                onClick={handleSend}
+                disabled={!input.trim() || loading}
+                className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Send className="w-5 h-5" />
+              </button>
             </div>
-          ) : (
-            <div className="space-y-4">
-              {messages.map((msg, idx) => (
-                <ChatMessage
-                  key={idx}
-                  message={msg}
-                  isUser={msg.role === 'user'}
-                />
-              ))}
-              {isLoading && (
-                <div className="flex gap-3 p-4 bg-gray-50 rounded-lg">
-                  <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center">
-                    <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
-                  </div>
-                  <div className="text-gray-500">Thinking...</div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-          )}
-        </div>
-
-        {/* Input */}
-        <div className="bg-white rounded-lg shadow-lg p-4">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Ask a question..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              disabled={isLoading}
-            />
-            <button
-              onClick={handleSend}
-              disabled={isLoading || !input.trim()}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              <Send className="w-4 h-4" />
-              Send
-            </button>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }
-
-export default App

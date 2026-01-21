@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Database, Code, AlertCircle } from 'lucide-react'
+import { Database, Code, AlertCircle, Sparkles, Table, Zap, Play } from 'lucide-react'
 import SchemaBuilder from './components/SchemaBuilder'
 import QueryDisplay from './components/QueryDisplay'
 import { generateSQL } from './lib/sql-generator'
@@ -43,113 +43,162 @@ function App() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      padding: '2rem',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-    }}>
-      <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        background: 'white',
-        borderRadius: '16px',
-        padding: '2rem',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
-      }}>
-        <header style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '1rem',
-          marginBottom: '2rem',
-          paddingBottom: '1rem',
-          borderBottom: '2px solid #e5e7eb'
-        }}>
-          <Database size={32} color="#667eea" />
-          <h1 style={{
-            fontSize: '2rem',
-            fontWeight: 'bold',
-            color: '#1f2937'
-          }}>
-            AI SQL Query Generator
-          </h1>
-        </header>
-
-        <div style={{ display: 'grid', gap: '2rem' }}>
-          <SchemaBuilder schema={schema} setSchema={setSchema} />
-
-          <div style={{
-            padding: '1.5rem',
-            background: '#f9fafb',
-            borderRadius: '12px',
-            border: '1px solid #e5e7eb'
-          }}>
-            <label style={{
-              display: 'block',
-              fontWeight: '600',
-              marginBottom: '0.5rem',
-              color: '#374151'
-            }}>
-              <Code size={18} style={{ display: 'inline', marginRight: '0.5rem' }} />
-              Natural Language Query
-            </label>
-            <textarea
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder="E.g., Show me all users who signed up in the last 7 days"
-              style={{
-                width: '100%',
-                minHeight: '100px',
-                padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                fontSize: '1rem',
-                fontFamily: 'inherit',
-                resize: 'vertical'
-              }}
-            />
-            <button
-              onClick={handleGenerate}
-              disabled={loading}
-              style={{
-                marginTop: '1rem',
-                padding: '0.75rem 1.5rem',
-                background: loading ? '#9ca3af' : '#667eea',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '1rem',
-                fontWeight: '600',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                transition: 'background 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                if (!loading) e.target.style.background = '#5568d3'
-              }}
-              onMouseLeave={(e) => {
-                if (!loading) e.target.style.background = '#667eea'
-              }}
-            >
-              {loading ? 'Generating...' : 'Generate SQL Query'}
-            </button>
+    <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600">
+      <div className="min-h-screen backdrop-blur-sm bg-white/10">
+        <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+          {/* Header */}
+          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 sm:p-8 mb-6 border border-white/20">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl shadow-lg">
+                <Database className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  AI SQL Generator
+                </h1>
+                <p className="text-gray-600 text-sm sm:text-base">
+                  Natural language to SQL queries with schema builder
+                </p>
+              </div>
+            </div>
           </div>
 
-          {error && (
-            <div style={{
-              padding: '1rem',
-              background: '#fee2e2',
-              border: '1px solid #fca5a5',
-              borderRadius: '8px',
-              color: '#991b1b',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
-            }}>
-              <AlertCircle size={20} />
-              {error}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left Sidebar - Schema Builder */}
+            <div className="lg:col-span-1">
+              <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 border border-white/20">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg">
+                    <Table className="w-5 h-5 text-white" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-800">Schema</h2>
+                </div>
+                <SchemaBuilder schema={schema} setSchema={setSchema} />
+              </div>
             </div>
-          )}
 
-          {sqlResult && <QueryDisplay result={sqlResult} />}
+            {/* Main Content */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Query Input */}
+              <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 border border-white/20">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="p-2 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg">
+                    <Code className="w-5 h-5 text-white" />
+                  </div>
+                  <label className="text-xl font-bold text-gray-800">
+                    Natural Language Query
+                  </label>
+                </div>
+                
+                <div className="space-y-4">
+                  <textarea
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && e.ctrlKey) {
+                        handleGenerate()
+                      }
+                    }}
+                    placeholder="E.g., Show me all users who signed up in the last 7 days with their email addresses..."
+                    className="w-full min-h-[120px] px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-200 focus:border-purple-400 transition-all resize-none text-base"
+                  />
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="text-xs text-gray-500">
+                      <kbd className="px-2 py-1 bg-gray-100 rounded border border-gray-300 text-gray-700 font-mono">Ctrl</kbd>
+                      {' + '}
+                      <kbd className="px-2 py-1 bg-gray-100 rounded border border-gray-300 text-gray-700 font-mono">Enter</kbd>
+                      {' to generate'}
+                    </div>
+                    <button
+                      onClick={handleGenerate}
+                      disabled={loading || !question.trim()}
+                      className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:from-blue-600 hover:to-purple-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed flex items-center gap-3 font-bold shadow-lg hover:shadow-xl transition-all transform hover:scale-105 disabled:transform-none"
+                    >
+                      {loading ? (
+                        <>
+                          <Sparkles className="w-5 h-5 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="w-5 h-5" />
+                          Generate Query
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-50 border-2 border-red-300 rounded-2xl p-4 flex items-center gap-3">
+                  <div className="p-2 bg-red-100 rounded-lg">
+                    <AlertCircle className="w-5 h-5 text-red-600" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-red-800">Error</div>
+                    <div className="text-red-700 text-sm">{error}</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Query Result */}
+              {sqlResult && (
+                <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
+                  <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-white">
+                        <Play className="w-5 h-5" />
+                        <span className="font-bold text-lg">Generated Query</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <span className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white rounded-full text-xs font-bold">
+                          SQL
+                        </span>
+                        <span className="px-3 py-1 bg-green-400/80 text-green-900 rounded-full text-xs font-bold">
+                          Ready
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <QueryDisplay result={sqlResult} />
+                  </div>
+                </div>
+              )}
+
+              {/* Example Queries */}
+              {!sqlResult && !loading && (
+                <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 border border-white/20">
+                  <h3 className="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-purple-600" />
+                    Example Queries
+                  </h3>
+                  <div className="grid gap-3">
+                    {[
+                      'Show me all users who signed up in the last 7 days',
+                      'Find users with gmail addresses',
+                      'Count total number of users by creation date',
+                      'Get the 10 most recent users'
+                    ].map((example, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setQuestion(example)}
+                        className="text-left p-4 bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 rounded-xl transition-all border border-blue-200 hover:border-blue-400 hover:shadow-md group"
+                      >
+                        <div className="flex items-start justify-between">
+                          <span className="text-sm text-gray-700 font-medium">{example}</span>
+                          <Code className="w-4 h-4 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

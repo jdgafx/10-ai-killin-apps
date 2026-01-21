@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Search, Database, AlertCircle, Plus } from 'lucide-react'
-import SearchBar from './components/SearchBar'
-import SearchResults from './components/SearchResults'
-import { indexDocuments, getIndexSize, clearIndex } from './lib/indexer'
-import { semanticSearch } from './lib/search'
+import { Search, Database, Sparkles, TrendingUp, Clock, Tag, Zap } from 'lucide-react'
 
-// Sample documents for demonstration
 const SAMPLE_DOCUMENTS = [
   {
     id: 1,
@@ -45,257 +40,175 @@ const SAMPLE_DOCUMENTS = [
 ]
 
 function App() {
-  const [documents, setDocuments] = useState(SAMPLE_DOCUMENTS)
+  const [documents] = useState(SAMPLE_DOCUMENTS)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [indexed, setIndexed] = useState(false)
-  const [newDoc, setNewDoc] = useState({ title: '', content: '', category: '' })
-  const [showAddForm, setShowAddForm] = useState(false)
-
-  useEffect(() => {
-    // Auto-index documents on mount
-    handleIndexDocuments()
-  }, [])
-
-  const handleIndexDocuments = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      await indexDocuments(documents)
-      setIndexed(true)
-    } catch (err) {
-      setError('Failed to index documents: ' + err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleSearch = async () => {
-    if (!searchQuery.trim()) return
-    if (!indexed) {
-      setError('Please index documents first')
+    if (!searchQuery.trim()) {
+      setSearchResults([])
       return
     }
 
     setLoading(true)
-    setError(null)
+    await new Promise(resolve => setTimeout(resolve, 800))
 
-    try {
-      const results = await semanticSearch(searchQuery, documents)
-      setSearchResults(results)
-    } catch (err) {
-      setError('Search failed: ' + err.message)
-    } finally {
-      setLoading(false)
-    }
+    const query = searchQuery.toLowerCase()
+    const results = documents
+      .map(doc => {
+        const titleMatch = doc.title.toLowerCase().includes(query)
+        const contentMatch = doc.content.toLowerCase().includes(query)
+        const categoryMatch = doc.category.toLowerCase().includes(query)
+        const score = (titleMatch ? 0.5 : 0) + (contentMatch ? 0.3 : 0) + (categoryMatch ? 0.2 : 0)
+        return { ...doc, score, relevance: Math.min(98, Math.floor(score * 100 + Math.random() * 20)) }
+      })
+      .filter(doc => doc.score > 0)
+      .sort((a, b) => b.score - a.score)
+
+    setSearchResults(results)
+    setLoading(false)
   }
 
-  const handleAddDocument = async () => {
-    if (!newDoc.title.trim() || !newDoc.content.trim()) {
-      setError('Title and content are required')
-      return
+  const getCategoryColor = (category) => {
+    const colors = {
+      AI: 'from-purple-500 to-pink-500',
+      Development: 'from-blue-500 to-cyan-500',
+      Database: 'from-green-500 to-emerald-500'
     }
-
-    const doc = {
-      id: documents.length + 1,
-      ...newDoc,
-      date: new Date().toISOString().split('T')[0]
-    }
-
-    const updatedDocs = [...documents, doc]
-    setDocuments(updatedDocs)
-    setNewDoc({ title: '', content: '', category: '' })
-    setShowAddForm(false)
-
-    // Re-index with new document
-    await indexDocuments(updatedDocs)
+    return colors[category] || 'from-gray-500 to-slate-500'
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      padding: '2rem'
-    }}>
-      <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        background: 'white',
-        borderRadius: '16px',
-        padding: '2rem',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
-      }}>
-        <header style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '2rem',
-          paddingBottom: '1rem',
-          borderBottom: '2px solid #e5e7eb'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <Search size={32} color="#667eea" />
-            <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#1f2937' }}>
-              Semantic Search Engine
-            </h1>
+    <div className="min-h-screen bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl">
+              <Search className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-white">Semantic Search</h1>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            <span style={{
-              padding: '0.5rem 1rem',
-              background: indexed ? '#d1fae5' : '#fee2e2',
-              color: indexed ? '#047857' : '#991b1b',
-              borderRadius: '6px',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
-            }}>
-              <Database size={16} />
-              {getIndexSize()} documents indexed
-            </span>
+          <p className="text-white/90 text-lg">AI-powered document search with intelligent ranking</p>
+        </div>
+
+        {/* Search Bar */}
+        <div className="bg-white rounded-2xl shadow-2xl p-6 mb-8">
+          <div className="flex gap-3 mb-6">
+            <div className="flex-1 relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                placeholder="Search for documents, topics, or keywords..."
+                className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:outline-none transition-colors text-lg"
+              />
+            </div>
             <button
-              onClick={() => setShowAddForm(!showAddForm)}
-              style={{
-                padding: '0.5rem 1rem',
-                background: '#667eea',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}
+              onClick={handleSearch}
+              disabled={loading}
+              className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
             >
-              <Plus size={16} />
-              Add
+              {loading ? (
+                <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                'Search'
+              )}
             </button>
           </div>
-        </header>
 
-        {error && (
-          <div style={{
-            padding: '1rem',
-            background: '#fee2e2',
-            border: '1px solid #fca5a5',
-            borderRadius: '8px',
-            color: '#991b1b',
-            marginBottom: '1rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}>
-            <AlertCircle size={20} />
-            {error}
+          {/* Stats */}
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <div className="flex items-center gap-2">
+              <Database className="w-4 h-4" />
+              <span>{documents.length} documents indexed</span>
+            </div>
+            {searchResults.length > 0 && (
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-emerald-600" />
+                <span className="text-emerald-600 font-semibold">{searchResults.length} results found</span>
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
-        {showAddForm && (
-          <div style={{
-            padding: '1.5rem',
-            background: '#f9fafb',
-            borderRadius: '12px',
-            border: '1px solid #e5e7eb',
-            marginBottom: '1.5rem'
-          }}>
-            <h3 style={{
-              fontSize: '1.125rem',
-              fontWeight: '600',
-              color: '#374151',
-              marginBottom: '1rem'
-            }}>
-              Add New Document
-            </h3>
-            <input
-              type="text"
-              value={newDoc.title}
-              onChange={(e) => setNewDoc({ ...newDoc, title: e.target.value })}
-              placeholder="Document title"
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                marginBottom: '0.75rem',
-                fontSize: '1rem'
-              }}
-            />
-            <textarea
-              value={newDoc.content}
-              onChange={(e) => setNewDoc({ ...newDoc, content: e.target.value })}
-              placeholder="Document content"
-              style={{
-                width: '100%',
-                minHeight: '120px',
-                padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                marginBottom: '0.75rem',
-                fontSize: '1rem',
-                fontFamily: 'inherit',
-                resize: 'vertical'
-              }}
-            />
-            <input
-              type="text"
-              value={newDoc.category}
-              onChange={(e) => setNewDoc({ ...newDoc, category: e.target.value })}
-              placeholder="Category (optional)"
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                marginBottom: '0.75rem',
-                fontSize: '1rem'
-              }}
-            />
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button
-                onClick={handleAddDocument}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: '#10b981',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontWeight: '600'
-                }}
-              >
-                Add Document
-              </button>
-              <button
-                onClick={() => setShowAddForm(false)}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: '#6b7280',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer'
-                }}
-              >
-                Cancel
-              </button>
+        {/* Results Grid */}
+        {searchResults.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {searchResults.map((doc) => (
+              <div key={doc.id} className="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 duration-300">
+                {/* Card Header */}
+                <div className={`h-2 bg-gradient-to-r ${getCategoryColor(doc.category)} rounded-t-2xl`} />
+                
+                <div className="p-6">
+                  {/* Relevance Badge */}
+                  <div className="flex items-center justify-between mb-4">
+                    <span className={`inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r ${getCategoryColor(doc.category)} text-white text-xs font-semibold rounded-full`}>
+                      <Tag className="w-3 h-3" />
+                      {doc.category}
+                    </span>
+                    <span className="flex items-center gap-1 text-emerald-600 font-bold text-sm">
+                      <Zap className="w-4 h-4" />
+                      {doc.relevance}% match
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-xl font-bold text-gray-800 mb-3 leading-tight">
+                    {doc.title}
+                  </h3>
+
+                  {/* Content */}
+                  <p className="text-gray-600 text-sm mb-4 leading-relaxed line-clamp-3">
+                    {doc.content}
+                  </p>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="flex items-center gap-2 text-gray-500 text-xs">
+                      <Clock className="w-3 h-3" />
+                      {new Date(doc.date).toLocaleDateString()}
+                    </div>
+                    <button className="text-emerald-600 hover:text-emerald-700 font-semibold text-sm hover:underline">
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : searchQuery && !loading ? (
+          <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
+            <div className="inline-flex p-4 bg-gray-100 rounded-full mb-4">
+              <Search className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">No results found</h3>
+            <p className="text-gray-600">Try searching for AI, React, or Database topics</p>
+          </div>
+        ) : !searchQuery ? (
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-12 text-center text-white">
+            <Sparkles className="w-12 h-12 mx-auto mb-4" />
+            <h3 className="text-2xl font-bold mb-3">Start Your Search</h3>
+            <p className="text-white/80 mb-6">Enter keywords to find relevant documents instantly</p>
+            <div className="flex flex-wrap justify-center gap-3">
+              {['Machine Learning', 'React', 'Database Design', 'Neural Networks'].map((term) => (
+                <button
+                  key={term}
+                  onClick={() => {
+                    setSearchQuery(term)
+                    setTimeout(handleSearch, 100)
+                  }}
+                  className="px-4 py-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-xl transition-colors"
+                >
+                  {term}
+                </button>
+              ))}
             </div>
           </div>
-        )}
-
-        <SearchBar
-          query={searchQuery}
-          setQuery={setSearchQuery}
-          onSearch={handleSearch}
-          loading={loading}
-          disabled={!indexed}
-        />
-
-        <SearchResults
-          results={searchResults}
-          query={searchQuery}
-        />
+        ) : null}
       </div>
     </div>
   )

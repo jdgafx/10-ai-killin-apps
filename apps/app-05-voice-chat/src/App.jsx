@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Mic, MicOff, Volume2, VolumeX, MessageCircle, AlertCircle } from 'lucide-react'
+import { Mic, MicOff, Volume2, VolumeX, MessageCircle, AlertCircle, Send, Sparkles, Bot, User } from 'lucide-react'
 import VoiceInput from './components/VoiceInput'
 import AudioWaveform from './components/AudioWaveform'
 import { VoiceProcessor } from './lib/speech'
@@ -81,166 +81,136 @@ function App() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      padding: '2rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}>
-      <div style={{
-        maxWidth: '800px',
-        width: '100%',
-        background: 'white',
-        borderRadius: '16px',
-        padding: '2rem',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
-      }}>
-        <header style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '2rem',
-          paddingBottom: '1rem',
-          borderBottom: '2px solid #e5e7eb'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <MessageCircle size={32} color="#667eea" />
-            <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#1f2937' }}>
-              Voice AI Chat
-            </h1>
-          </div>
-          <button
-            onClick={() => setAutoSpeak(!autoSpeak)}
-            style={{
-              padding: '0.5rem',
-              background: autoSpeak ? '#10b981' : '#ef4444',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer'
-            }}
-            title={autoSpeak ? 'Auto-speak enabled' : 'Auto-speak disabled'}
-          >
-            {autoSpeak ? <Volume2 size={20} /> : <VolumeX size={20} />}
-          </button>
-        </header>
-
-        {error && (
-          <div style={{
-            padding: '1rem',
-            background: '#fee2e2',
-            border: '1px solid #fca5a5',
-            borderRadius: '8px',
-            color: '#991b1b',
-            marginBottom: '1rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}>
-            <AlertCircle size={20} />
-            {error}
-          </div>
-        )}
-
-        <div style={{
-          height: '400px',
-          overflowY: 'auto',
-          marginBottom: '1.5rem',
-          padding: '1rem',
-          background: '#f9fafb',
-          borderRadius: '8px',
-          border: '1px solid #e5e7eb'
-        }}>
-          {conversation.length === 0 ? (
-            <div style={{
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#9ca3af',
-              textAlign: 'center'
-            }}>
-              <div>
-                <Mic size={48} style={{ margin: '0 auto 1rem' }} />
-                <p>Start a conversation by speaking or typing</p>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+      <div className="min-h-screen backdrop-blur-sm bg-white/10 flex items-center justify-center p-4 sm:p-6">
+        <div className="max-w-4xl w-full bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/20 backdrop-blur-sm rounded-xl">
+                  <MessageCircle className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white">
+                    Voice AI Chat
+                  </h1>
+                  <p className="text-white/80 text-sm">
+                    Speak naturally, get intelligent responses
+                  </p>
+                </div>
               </div>
-            </div>
-          ) : (
-            conversation.map((message, index) => (
-              <div
-                key={index}
-                style={{
-                  marginBottom: '1rem',
-                  padding: '0.75rem 1rem',
-                  background: message.role === 'user' ? '#dbeafe' : '#d1fae5',
-                  borderRadius: '8px',
-                  marginLeft: message.role === 'user' ? '2rem' : '0',
-                  marginRight: message.role === 'assistant' ? '2rem' : '0'
-                }}
+              <button
+                onClick={() => setAutoSpeak(!autoSpeak)}
+                className={`p-3 rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:scale-105 ${
+                  autoSpeak 
+                    ? 'bg-green-500 hover:bg-green-600' 
+                    : 'bg-red-500 hover:bg-red-600'
+                }`}
+                title={autoSpeak ? 'Auto-speak enabled' : 'Auto-speak disabled'}
               >
-                <div style={{
-                  fontSize: '0.75rem',
-                  fontWeight: '600',
-                  color: message.role === 'user' ? '#1e40af' : '#047857',
-                  marginBottom: '0.25rem'
-                }}>
-                  {message.role === 'user' ? 'You' : 'AI'}
-                </div>
-                <div style={{
-                  fontSize: '0.875rem',
-                  color: '#1f2937',
-                  lineHeight: '1.5'
-                }}>
-                  {message.content}
-                </div>
+                {autoSpeak ? <Volume2 className="w-6 h-6 text-white" /> : <VolumeX className="w-6 h-6 text-white" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mx-6 mt-4 p-4 bg-red-50 border-2 border-red-300 rounded-xl flex items-center gap-3">
+              <div className="p-2 bg-red-100 rounded-lg">
+                <AlertCircle className="w-5 h-5 text-red-600" />
               </div>
-            ))
-          )}
-          {isSpeaking && (
-            <div style={{
-              padding: '0.75rem 1rem',
-              background: '#fef3c7',
-              borderRadius: '8px',
-              fontSize: '0.875rem',
-              color: '#78350f',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
-            }}>
-              <Volume2 size={16} />
-              AI is speaking...
+              <div>
+                <div className="font-bold text-red-800">Error</div>
+                <div className="text-red-700 text-sm">{error}</div>
+              </div>
             </div>
           )}
-        </div>
 
-        {isRecording && (
-          <div style={{
-            marginBottom: '1rem',
-            padding: '1rem',
-            background: '#fef3c7',
-            border: '1px solid #fcd34d',
-            borderRadius: '8px'
-          }}>
-            <AudioWaveform isActive={isRecording} />
-            {transcript && (
-              <p style={{
-                marginTop: '0.5rem',
-                fontSize: '0.875rem',
-                color: '#78350f'
-              }}>
-                {transcript}
-              </p>
+          {/* Chat Area */}
+          <div className="h-[500px] overflow-y-auto p-6 space-y-4">
+            {conversation.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-gray-400">
+                <div className="p-8 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full mb-6">
+                  <Mic className="w-20 h-20 text-indigo-400" />
+                </div>
+                <p className="text-2xl font-bold text-gray-600 mb-2">Ready to Chat!</p>
+                <p className="text-base text-gray-500 text-center max-w-md">
+                  Press the microphone button to speak or type your message below
+                </p>
+              </div>
+            ) : (
+              conversation.map((message, index) => (
+                <div
+                  key={index}
+                  className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  {message.role === 'assistant' && (
+                    <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
+                      <Bot className="w-6 h-6 text-white" />
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-[70%] px-5 py-3 rounded-2xl shadow-md ${
+                      message.role === 'user'
+                        ? 'bg-gradient-to-br from-indigo-500 to-purple-500 text-white rounded-br-sm'
+                        : 'bg-white border-2 border-gray-200 text-gray-800 rounded-bl-sm'
+                    }`}
+                  >
+                    <div className="text-sm font-medium mb-1 opacity-80">
+                      {message.role === 'user' ? 'You' : 'AI Assistant'}
+                    </div>
+                    <div className="text-base leading-relaxed">
+                      {message.content}
+                    </div>
+                  </div>
+                  {message.role === 'user' && (
+                    <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full flex items-center justify-center">
+                      <User className="w-6 h-6 text-white" />
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+            {isSpeaking && (
+              <div className="flex gap-3 justify-start">
+                <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
+                  <Bot className="w-6 h-6 text-white" />
+                </div>
+                <div className="px-5 py-3 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-2xl rounded-bl-sm flex items-center gap-3">
+                  <Volume2 className="w-5 h-5 text-yellow-700 animate-pulse" />
+                  <span className="text-yellow-800 font-medium">AI is speaking...</span>
+                </div>
+              </div>
             )}
           </div>
-        )}
 
-        <VoiceInput
-          isRecording={isRecording}
-          onStartRecording={handleStartRecording}
-          onStopRecording={handleStopRecording}
-          onTextSubmit={handleTextSubmit}
-        />
+          {/* Recording Indicator */}
+          {isRecording && (
+            <div className="mx-6 mb-4 p-4 bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-300 rounded-xl">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                <span className="font-bold text-red-800">Recording...</span>
+              </div>
+              <AudioWaveform isActive={isRecording} />
+              {transcript && (
+                <p className="mt-3 text-sm text-red-800 font-medium p-3 bg-white/50 rounded-lg">
+                  {transcript}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Voice Input */}
+          <div className="p-6 bg-gray-50 border-t-2 border-gray-200">
+            <VoiceInput
+              isRecording={isRecording}
+              onStartRecording={handleStartRecording}
+              onStopRecording={handleStopRecording}
+              onTextSubmit={handleTextSubmit}
+            />
+          </div>
+        </div>
       </div>
     </div>
   )
