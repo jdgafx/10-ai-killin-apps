@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-TOKEN="fTMEClc5ZZ8z7ov1iE26R8JT"
+TOKEN="O3gYLLrl9b1fjeAfQ1ZQCcVO"
 
 APPS=(
   "app-01-rag-chat"
