@@ -14,7 +14,7 @@
     "react-dom": "^18.2.0",
     "lucide-react": "^0.309.0",
     "prismjs": "^1.29.0",
-    "ai-providers": "workspace:*"
+    "@anthropic-ai/sdk": "^0.17.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.37",

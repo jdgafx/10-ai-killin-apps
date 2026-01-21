@@ -1,13 +1,17 @@
+#!/bin/bash
+# Fix dependencies for all apps
+
+for app in apps/app-*/; do
+  echo "Fixing $app"
+  cat > "$app/package.json" << 'JSON'
 {
-  "name": "app-07-semantic-search",
+  "name": "$(basename $app)",
   "version": "1.0.0",
   "type": "module",
-  "description": "Semantic Search Engine - AI-powered vector similarity search",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx"
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -16,10 +20,12 @@
     "@anthropic-ai/sdk": "^0.17.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.37",
-    "@types/react-dom": "^18.2.15",
     "@vitejs/plugin-react": "^4.2.1",
-    "vite": "^5.0.8",
-    "eslint": "^8.56.0"
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6",
+    "vite": "^5.0.8"
   }
 }
+JSON
+done
