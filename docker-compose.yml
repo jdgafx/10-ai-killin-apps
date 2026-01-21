@@ -1,0 +1,311 @@
+version: '3.8'
+
+# Docker Compose configuration for all 10 AI Portfolio applications
+# Orchestrates deployment of all projects with consistent configuration
+
+services:
+  # ============================================
+  # App 01: AI Code Reviewer
+  # ============================================
+  app-01-ai-code-reviewer:
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.template
+      args:
+        APP_NAME: app-01-ai-code-reviewer
+        NODE_ENV: production
+    image: ai-portfolio/app-01-ai-code-reviewer:latest
+    container_name: app-01-ai-code-reviewer
+    restart: unless-stopped
+    ports:
+      - "8001:8080"
+    environment:
+      - NODE_ENV=production
+      - VITE_MINIMAX_API_KEY=${VITE_MINIMAX_API_KEY}
+      - VITE_DEEPSEEK_API_KEY=${VITE_DEEPSEEK_API_KEY}
+      - VITE_GEMINI_CLIENT_ID=${VITE_GEMINI_CLIENT_ID}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ai-portfolio-network
+
+  # ============================================
+  # App 02: Document Chat
+  # ============================================
+  app-02-document-chat:
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.template
+      args:
+        APP_NAME: app-02-document-chat
+        NODE_ENV: production
+    image: ai-portfolio/app-02-document-chat:latest
+    container_name: app-02-document-chat
+    restart: unless-stopped
+    ports:
+      - "8002:8080"
+    environment:
+      - NODE_ENV=production
+      - VITE_MINIMAX_API_KEY=${VITE_MINIMAX_API_KEY}
+      - VITE_DEEPSEEK_API_KEY=${VITE_DEEPSEEK_API_KEY}
+      - VITE_GEMINI_CLIENT_ID=${VITE_GEMINI_CLIENT_ID}
+      - VITE_ENABLE_RAG=true
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ai-portfolio-network
+
+  # ============================================
+  # App 03: Image Generator
+  # ============================================
+  app-03-image-generator:
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.template
+      args:
+        APP_NAME: app-03-image-generator
+        NODE_ENV: production
+    image: ai-portfolio/app-03-image-generator:latest
+    container_name: app-03-image-generator
+    restart: unless-stopped
+    ports:
+      - "8003:8080"
+    environment:
+      - NODE_ENV=production
+      - VITE_MINIMAX_API_KEY=${VITE_MINIMAX_API_KEY}
+      - VITE_GEMINI_CLIENT_ID=${VITE_GEMINI_CLIENT_ID}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ai-portfolio-network
+
+  # ============================================
+  # App 04: Voice Assistant
+  # ============================================
+  app-04-voice-assistant:
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.template
+      args:
+        APP_NAME: app-04-voice-assistant
+        NODE_ENV: production
+    image: ai-portfolio/app-04-voice-assistant:latest
+    container_name: app-04-voice-assistant
+    restart: unless-stopped
+    ports:
+      - "8004:8080"
+    environment:
+      - NODE_ENV=production
+      - VITE_MINIMAX_API_KEY=${VITE_MINIMAX_API_KEY}
+      - VITE_DEEPSEEK_API_KEY=${VITE_DEEPSEEK_API_KEY}
+      - VITE_ENABLE_VOICE=true
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ai-portfolio-network
+
+  # ============================================
+  # App 05: Code Explainer
+  # ============================================
+  app-05-code-explainer:
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.template
+      args:
+        APP_NAME: app-05-code-explainer
+        NODE_ENV: production
+    image: ai-portfolio/app-05-code-explainer:latest
+    container_name: app-05-code-explainer
+    restart: unless-stopped
+    ports:
+      - "8005:8080"
+    environment:
+      - NODE_ENV=production
+      - VITE_MINIMAX_API_KEY=${VITE_MINIMAX_API_KEY}
+      - VITE_DEEPSEEK_API_KEY=${VITE_DEEPSEEK_API_KEY}
+      - VITE_GEMINI_CLIENT_ID=${VITE_GEMINI_CLIENT_ID}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ai-portfolio-network
+
+  # ============================================
+  # App 06: Test Generator
+  # ============================================
+  app-06-test-generator:
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.template
+      args:
+        APP_NAME: app-06-test-generator
+        NODE_ENV: production
+    image: ai-portfolio/app-06-test-generator:latest
+    container_name: app-06-test-generator
+    restart: unless-stopped
+    ports:
+      - "8006:8080"
+    environment:
+      - NODE_ENV=production
+      - VITE_MINIMAX_API_KEY=${VITE_MINIMAX_API_KEY}
+      - VITE_DEEPSEEK_API_KEY=${VITE_DEEPSEEK_API_KEY}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ai-portfolio-network
+
+  # ============================================
+  # App 07: API Integrator
+  # ============================================
+  app-07-api-integrator:
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.template
+      args:
+        APP_NAME: app-07-api-integrator
+        NODE_ENV: production
+    image: ai-portfolio/app-07-api-integrator:latest
+    container_name: app-07-api-integrator
+    restart: unless-stopped
+    ports:
+      - "8007:8080"
+    environment:
+      - NODE_ENV=production
+      - VITE_MINIMAX_API_KEY=${VITE_MINIMAX_API_KEY}
+      - VITE_DEEPSEEK_API_KEY=${VITE_DEEPSEEK_API_KEY}
+      - VITE_GEMINI_CLIENT_ID=${VITE_GEMINI_CLIENT_ID}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ai-portfolio-network
+
+  # ============================================
+  # App 08: Data Visualizer
+  # ============================================
+  app-08-data-visualizer:
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.template
+      args:
+        APP_NAME: app-08-data-visualizer
+        NODE_ENV: production
+    image: ai-portfolio/app-08-data-visualizer:latest
+    container_name: app-08-data-visualizer
+    restart: unless-stopped
+    ports:
+      - "8008:8080"
+    environment:
+      - NODE_ENV=production
+      - VITE_MINIMAX_API_KEY=${VITE_MINIMAX_API_KEY}
+      - VITE_GEMINI_CLIENT_ID=${VITE_GEMINI_CLIENT_ID}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ai-portfolio-network
+
+  # ============================================
+  # App 09: Autonomous Agent
+  # ============================================
+  app-09-autonomous-agent:
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.template
+      args:
+        APP_NAME: app-09-autonomous-agent
+        NODE_ENV: production
+    image: ai-portfolio/app-09-autonomous-agent:latest
+    container_name: app-09-autonomous-agent
+    restart: unless-stopped
+    ports:
+      - "8009:8080"
+    environment:
+      - NODE_ENV=production
+      - VITE_MINIMAX_API_KEY=${VITE_MINIMAX_API_KEY}
+      - VITE_DEEPSEEK_API_KEY=${VITE_DEEPSEEK_API_KEY}
+      - VITE_GEMINI_CLIENT_ID=${VITE_GEMINI_CLIENT_ID}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ai-portfolio-network
+
+  # ============================================
+  # App 10: RAG Knowledge Base
+  # ============================================
+  app-10-rag-knowledge-base:
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.template
+      args:
+        APP_NAME: app-10-rag-knowledge-base
+        NODE_ENV: production
+    image: ai-portfolio/app-10-rag-knowledge-base:latest
+    container_name: app-10-rag-knowledge-base
+    restart: unless-stopped
+    ports:
+      - "8010:8080"
+    environment:
+      - NODE_ENV=production
+      - VITE_MINIMAX_API_KEY=${VITE_MINIMAX_API_KEY}
+      - VITE_DEEPSEEK_API_KEY=${VITE_DEEPSEEK_API_KEY}
+      - VITE_GEMINI_CLIENT_ID=${VITE_GEMINI_CLIENT_ID}
+      - VITE_ENABLE_RAG=true
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ai-portfolio-network
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  ai-portfolio-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+# ============================================
+# Volumes (if needed for persistence)
+# ============================================
+volumes:
+  app-data:
+    driver: local

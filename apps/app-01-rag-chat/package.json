@@ -1,0 +1,25 @@
+{
+  "name": "app-01-rag-chat",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Multi-Model AI Chat Platform with RAG - Vector-powered chat with MiniMax, Gemini, and DeepSeek",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "lucide-react": "^0.309.0",
+    "ai-providers": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.0.8",
+    "eslint": "^8.56.0"
+  }
+}

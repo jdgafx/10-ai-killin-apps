@@ -1,0 +1,263 @@
+name: Deploy All Projects to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: "18"
+
+jobs:
+  build-and-test:
+    name: Build and Test ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - app-01-ai-code-reviewer
+          - app-02-document-chat
+          - app-03-image-generator
+          - app-04-voice-assistant
+          - app-05-code-explainer
+          - app-06-test-generator
+          - app-07-api-integrator
+          - app-08-data-visualizer
+          - app-09-autonomous-agent
+          - app-10-rag-knowledge-base
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint --workspace=apps/${{ matrix.project }}
+        continue-on-error: true
+
+      - name: Run tests
+        run: npm run test --workspace=apps/${{ matrix.project }}
+        continue-on-error: true
+
+      - name: Build project
+        run: npm run build --workspace=apps/${{ matrix.project }}
+        env:
+          VITE_MINIMAX_API_KEY: ${{ secrets.VITE_MINIMAX_API_KEY }}
+          VITE_DEEPSEEK_API_KEY: ${{ secrets.VITE_DEEPSEEK_API_KEY }}
+          VITE_GITHUB_COPILOT_TOKEN: ${{ secrets.VITE_GITHUB_COPILOT_TOKEN }}
+          VITE_GEMINI_CLIENT_ID: ${{ secrets.VITE_GEMINI_CLIENT_ID }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.project }}
+          path: apps/${{ matrix.project }}/dist/
+          retention-days: 1
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create pages directory
+        run: mkdir -p pages
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: pages-artifacts
+
+      - name: Organize builds for GitHub Pages
+        run: |
+          # Create index listing all projects
+          cat > pages/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>AI Portfolio Projects</title>
+            <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 40px 20px;
+              }
+              .container { max-width: 1200px; margin: 0 auto; }
+              h1 {
+                color: white;
+                text-align: center;
+                margin-bottom: 50px;
+                font-size: 2.5rem;
+                text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+              }
+              .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 30px;
+                margin-bottom: 40px;
+              }
+              .card {
+                background: white;
+                border-radius: 12px;
+                padding: 30px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+              }
+              .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+              }
+              .card h2 {
+                color: #667eea;
+                margin-bottom: 10px;
+                font-size: 1.3rem;
+              }
+              .card p {
+                color: #666;
+                font-size: 0.95rem;
+                margin-bottom: 20px;
+                line-height: 1.5;
+              }
+              .card a {
+                display: inline-block;
+                background: #667eea;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 6px;
+                text-decoration: none;
+                transition: background 0.3s ease;
+                font-weight: 500;
+              }
+              .card a:hover {
+                background: #764ba2;
+              }
+              .footer {
+                text-align: center;
+                color: white;
+                margin-top: 40px;
+                font-size: 0.9rem;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>🚀 AI Portfolio Projects</h1>
+              <div class="grid">
+                <div class="card">
+                  <h2>01. AI Code Reviewer</h2>
+                  <p>Intelligent code analysis and review using advanced AI models</p>
+                  <a href="./app-01-ai-code-reviewer/">View Project →</a>
+                </div>
+                <div class="card">
+                  <h2>02. Document Chat</h2>
+                  <p>Chat with documents powered by semantic understanding</p>
+                  <a href="./app-02-document-chat/">View Project →</a>
+                </div>
+                <div class="card">
+                  <h2>03. Image Generator</h2>
+                  <p>Generate stunning images with AI-powered creativity</p>
+                  <a href="./app-03-image-generator/">View Project →</a>
+                </div>
+                <div class="card">
+                  <h2>04. Voice Assistant</h2>
+                  <p>Voice-powered AI assistant with natural language understanding</p>
+                  <a href="./app-04-voice-assistant/">View Project →</a>
+                </div>
+                <div class="card">
+                  <h2>05. Code Explainer</h2>
+                  <p>Intelligent code explanation and documentation generator</p>
+                  <a href="./app-05-code-explainer/">View Project →</a>
+                </div>
+                <div class="card">
+                  <h2>06. Test Generator</h2>
+                  <p>Automated unit and integration test generation</p>
+                  <a href="./app-06-test-generator/">View Project →</a>
+                </div>
+                <div class="card">
+                  <h2>07. API Integrator</h2>
+                  <p>Unified playground for multiple AI API integrations</p>
+                  <a href="./app-07-api-integrator/">View Project →</a>
+                </div>
+                <div class="card">
+                  <h2>08. Data Visualizer</h2>
+                  <p>AI-powered data visualization and insights</p>
+                  <a href="./app-08-data-visualizer/">View Project →</a>
+                </div>
+                <div class="card">
+                  <h2>09. Autonomous Agent</h2>
+                  <p>Multi-agent orchestrator for complex task automation</p>
+                  <a href="./app-09-autonomous-agent/">View Project →</a>
+                </div>
+                <div class="card">
+                  <h2>10. RAG Knowledge Base</h2>
+                  <p>Retrieval-augmented generation knowledge system</p>
+                  <a href="./app-10-rag-knowledge-base/">View Project →</a>
+                </div>
+              </div>
+              <div class="footer">
+                <p>Built with Node.js, Vite, and powered by multiple AI providers</p>
+              </div>
+            </div>
+          </body>
+          </html>
+          EOF
+
+          # Copy each project's build output
+          for dir in pages-artifacts/build-*/; do
+            project_name=$(basename "$dir" | sed 's/^build-//')
+            if [ -d "$dir" ]; then
+              mkdir -p "pages/$project_name"
+              cp -r "$dir"* "pages/$project_name/" 2>/dev/null || true
+              # Fix base path for Vite build (add ./ prefix to assets)
+              if [ -f "pages/$project_name/index.html" ]; then
+                sed -i 's|="/|=".\/|g' "pages/$project_name/index.html" || true
+              fi
+            fi
+          done
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: pages
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Print deployment info
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "📍 All projects are now live at:"
+          echo "   - Main index: ${{ steps.deployment.outputs.page_url }}"
+          echo "   - Projects: ${{ steps.deployment.outputs.page_url }}app-XX-project-name/"

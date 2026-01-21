@@ -1,0 +1,93 @@
+# Frontend Development Rules - ALWAYS FOLLOW
+
+## Primary Rule: Use Lovable 2.0 Design Principles
+
+**Source:** `Lovable_2.0.txt` and `FRONTEND_DESIGN_PRINCIPLES.md`
+
+These are our best practices for creating world-class frontend applications.
+
+## Core Principles
+
+1. **Always generate responsive designs** - Mobile-first approach
+2. **Use Tailwind CSS extensively** - Primary styling method
+3. **Use shadcn/ui components** - Prebuilt, accessible UI library
+4. **Use toasts for user feedback** - Important events and actions
+5. **Keep code simple and elegant** - Don't overengineer
+6. **Only implement what's requested** - Don't add extra features
+7. **Use console.log extensively** - Essential for debugging
+8. **No try/catch unless requested** - Let errors bubble up
+
+## Required Tech Stack
+
+- **React 18+** with TypeScript
+- **Tailwind CSS** for all styling
+- **shadcn/ui** for UI components
+- **lucide-react** for icons
+- **@tanstack/react-query** for data fetching (object format only)
+- **recharts** for charts/graphs
+
+## Code Patterns
+
+### React Query (ALWAYS use object format)
+```typescript
+const { data, isLoading } = useQuery({
+  queryKey: ['todos'],
+  queryFn: fetchTodos,
+});
+```
+
+### Component Structure
+```typescript
+import { Button } from '@/components/ui/button';
+
+const MyComponent: React.FC<Props> = ({ title }) => {
+  return (
+    <div className="p-4 bg-white rounded-lg shadow-md">
+      <h2 className="text-xl font-bold">{title}</h2>
+    </div>
+  );
+};
+```
+
+### Responsive Design
+```typescript
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  {/* Content */}
+</div>
+```
+
+## What NOT to Do
+
+❌ Use inline styles (use Tailwind)
+❌ Use try/catch everywhere (unless requested)
+❌ Overengineer solutions
+❌ Add features not requested
+❌ Forget responsive design
+❌ Skip console logs for debugging
+❌ Use deprecated React Query syntax
+
+## Integration Notes
+
+### Supabase
+If user needs backend features (auth, database, APIs):
+- Tell them to click green Supabase button (top right)
+- Connect to Supabase first, then implement features
+- Don't code backend functionality without Supabase connected
+
+### AI Models
+- OpenAI: gpt-4o-mini, gpt-4o, gpt-4.5-preview
+- Perplexity: llama-3.1-sonar models
+- Runware: runware:100@1
+
+## Quality Checklist
+
+Every component must:
+- ✅ Be responsive (mobile, tablet, desktop)
+- ✅ Use Tailwind CSS exclusively
+- ✅ Use shadcn/ui where applicable
+- ✅ Include console logs for debugging
+- ✅ Have toast notifications for user feedback
+- ✅ Be simple and elegant (no overengineering)
+
+## Reference
+See `FRONTEND_DESIGN_PRINCIPLES.md` for complete guidelines.

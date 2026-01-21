@@ -1,0 +1,64 @@
+{
+  "name": "ai-portfolio-monorepo",
+  "version": "1.0.0",
+  "description": "A comprehensive collection of 10 production-ready AI applications showcasing full-stack engineering capabilities",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspaces",
+    "dev:app-01": "npm run dev --workspace=app-01-ai-code-reviewer",
+    "dev:app-02": "npm run dev --workspace=app-02-document-chat",
+    "dev:app-03": "npm run dev --workspace=app-03-image-generator",
+    "dev:app-04": "npm run dev --workspace=app-04-voice-assistant",
+    "dev:app-05": "npm run dev --workspace=app-05-code-explainer",
+    "dev:app-06": "npm run dev --workspace=app-06-test-generator",
+    "dev:app-07": "npm run dev --workspace=app-07-api-integrator",
+    "dev:app-08": "npm run dev --workspace=app-08-data-visualizer",
+    "dev:app-09": "npm run dev --workspace=app-09-autonomous-agent",
+    "dev:app-10": "npm run dev --workspace=app-10-rag-knowledge-base",
+    "build": "npm run build --workspaces",
+    "build:app-01": "npm run build --workspace=app-01-ai-code-reviewer",
+    "build:app-02": "npm run build --workspace=app-02-document-chat",
+    "build:app-03": "npm run build --workspace=app-03-image-generator",
+    "build:app-04": "npm run build --workspace=app-04-voice-assistant",
+    "build:app-05": "npm run build --workspace=app-05-code-explainer",
+    "build:app-06": "npm run build --workspace=app-06-test-generator",
+    "build:app-07": "npm run build --workspace=app-07-api-integrator",
+    "build:app-08": "npm run build --workspace=app-08-data-visualizer",
+    "build:app-09": "npm run build --workspace=app-09-autonomous-agent",
+    "build:app-10": "npm run build --workspace=app-10-rag-knowledge-base",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --config config/eslint/eslint.config.js",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix --config config/eslint/eslint.config.js",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css}\" --config config/prettier/prettier.config.js",
+    "type-check": "tsc --noEmit",
+    "clean": "npm run clean --workspaces && rm -rf dist build coverage",
+    "test": "npm run test --workspaces --if-present",
+    "test:unit": "npm run test:unit --workspaces --if-present",
+    "test:e2e": "npm run test:e2e --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@eslint/js": "^8.56.0",
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "@typescript-eslint/parser": "^6.13.2",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.8"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
