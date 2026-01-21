@@ -99,3 +99,4 @@ coolify/
 # Package manager
 pnpm-lock.yaml
 keys_and_mcps.md
+.env.local
