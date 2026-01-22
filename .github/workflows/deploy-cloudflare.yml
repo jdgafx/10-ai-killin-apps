@@ -7,10 +7,14 @@ on:
   workflow_dispatch:
     inputs:
       deploy-all:
-        description: 'Deploy all apps'
+        description: "Deploy all apps"
         required: false
-        default: 'true'
+        default: "true"
         type: boolean
+
+permissions:
+  contents: read
+  deployments: write
 
 jobs:
   deploy-app-01:
@@ -115,7 +119,19 @@ jobs:
 
   summary:
     name: Deployment Summary
-    needs: [deploy-app-01, deploy-app-02, deploy-app-03, deploy-app-04, deploy-app-05, deploy-app-06, deploy-app-07, deploy-app-08, deploy-app-09, deploy-app-10]
+    needs:
+      [
+        deploy-app-01,
+        deploy-app-02,
+        deploy-app-03,
+        deploy-app-04,
+        deploy-app-05,
+        deploy-app-06,
+        deploy-app-07,
+        deploy-app-08,
+        deploy-app-09,
+        deploy-app-10,
+      ]
     runs-on: ubuntu-latest
     steps:
       - name: Summary
