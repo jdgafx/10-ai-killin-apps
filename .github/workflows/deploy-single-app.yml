@@ -57,13 +57,11 @@ jobs:
           fi
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: ${{ inputs.project-name }}
-          directory: apps/${{ inputs.app-name }}/dist
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: pages deploy apps/${{ inputs.app-name }}/dist --project-name=${{ inputs.project-name }}
 
       - name: Deployment Summary
         run: |
