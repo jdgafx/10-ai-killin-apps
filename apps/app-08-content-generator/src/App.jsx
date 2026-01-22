@@ -31,22 +31,22 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-amber-50">
-      <div className="max-w-7xl mx-auto p-8">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+      <div className="max-w-7xl mx-auto p-10">
         {/* Magazine Header */}
-        <div className="text-center border-b-4 border-red-500 pb-8 mb-8">
-          <h1 className="text-6xl font-serif font-bold text-gray-900 mb-2">
+        <div className="text-center border-b-4 border-red-500 pb-10 mb-10 backdrop-blur-lg bg-white/80 rounded-t-2xl shadow-2xl">
+          <h1 className="text-7xl font-serif font-bold bg-gradient-to-r from-red-600 to-amber-600 bg-clip-text text-transparent mb-4 tracking-tight">
             CONTENT STUDIO
           </h1>
-          <p className="text-sm uppercase tracking-widest text-gray-600">Editorial • Publishing • Creative</p>
+          <p className="text-sm uppercase tracking-widest text-amber-700 font-bold">Editorial • Publishing • Creative Writing</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Sidebar Controls - Magazine style */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white border-l-4 border-rose-600 p-6 shadow-sm">
-              <h3 className="text-xs uppercase tracking-widest text-gray-500 mb-4 font-bold">Content Type</h3>
-              <div className="space-y-2">
+            <div className="bg-white border-l-4 border-red-600 p-6 shadow-xl rounded-r-xl transition-all duration-300 hover:shadow-2xl hover:scale-105">
+              <h3 className="text-xs uppercase tracking-widest text-red-600 mb-5 font-bold">Content Type</h3>
+              <div className="space-y-3">
                 {CONTENT_TYPES.map((type) => {
                   const Icon = type.icon
                   return (
@@ -67,8 +67,8 @@ export default function App() {
               </div>
             </div>
 
-            <div className="bg-white border-l-4 border-rose-600 p-6 shadow-sm">
-              <h3 className="text-xs uppercase tracking-widest text-gray-500 mb-4 font-bold">Settings</h3>
+            <div className="bg-white border-l-4 border-amber-600 p-6 shadow-xl rounded-r-xl transition-all duration-300 hover:shadow-2xl hover:scale-105">
+              <h3 className="text-xs uppercase tracking-widest text-amber-700 mb-5 font-bold">Settings</h3>
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs uppercase tracking-wide text-gray-700 mb-2 font-semibold">Topic</label>
@@ -99,21 +99,21 @@ export default function App() {
             <button
               onClick={handleGenerate}
               disabled={isGenerating || !topic.trim()}
-              className="w-full py-4 bg-red-500 text-white font-bold uppercase tracking-wide hover:bg-rose-600 disabled:opacity-50 transition-colors"
+              className="w-full py-5 bg-gradient-to-r from-red-500 to-amber-500 text-white font-bold uppercase tracking-widest hover:from-red-600 hover:to-amber-600 disabled:opacity-50 transition-all duration-300 rounded-xl shadow-xl shadow-red-500/50 hover:scale-105"
             >
-              {isGenerating ? 'Generating...' : 'Generate'}
+              {isGenerating ? 'Generating...' : '✍️ Generate'}
             </button>
           </div>
 
           {/* Main Preview Area - Large magazine-style layout */}
           <div className="lg:col-span-2">
-            <div className="bg-white shadow-lg min-h-[600px]">
+            <div className="bg-white shadow-2xl min-h-[600px] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-3xl">
               {/* Preview Header */}
-              <div className="border-b-2 border-gray-200 p-6 bg-gradient-to-r from-orange-50 to-amber-50">
+              <div className="border-b-2 border-stone-200 p-8 bg-gradient-to-r from-orange-50 via-amber-50 to-yellow-50">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Type className="w-6 h-6 text-red-500" />
-                    <h2 className="text-2xl font-serif font-bold text-gray-900">Preview</h2>
+                  <div className="flex items-center gap-4">
+                    <Type className="w-8 h-8 text-red-500 animate-pulse" />
+                    <h2 className="text-3xl font-serif font-bold bg-gradient-to-r from-red-600 to-amber-600 bg-clip-text text-transparent">Preview</h2>
                   </div>
                   {generatedContent && (
                     <div className="flex gap-2">

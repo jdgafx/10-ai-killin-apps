@@ -95,10 +95,15 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col">
       {/* macOS-style Header Bar */}
-      <div className="bg-white border-b border-slate-200 px-4 py-3 shadow-sm">
-        <div className="flex items-center gap-3">
-          <Folder className="w-5 h-5 text-indigo-600" />
-          <h1 className="text-lg font-semibold text-slate-800">Document Processor</h1>
+      <div className="bg-gradient-to-r from-white to-slate-50 border-b border-slate-200 px-6 py-4 shadow-lg">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/50 transition-all duration-300 hover:scale-110">
+            <Folder className="w-7 h-7 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Document Processor</h1>
+            <p className="text-sm text-slate-500">Intelligent File Manager</p>
+          </div>
           <div className="ml-auto">
             <label className="cursor-pointer">
               <input
@@ -108,15 +113,15 @@ function App() {
                 onChange={(e) => handleFileUpload(e.target.files[0])}
                 disabled={loading}
               />
-              <span className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-all shadow-sm">
+              <span className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg shadow-indigo-500/50 hover:scale-105">
                 {loading ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     Processing...
                   </>
                 ) : (
                   <>
-                    <Upload className="w-4 h-4" />
+                    <Upload className="w-5 h-5" />
                     Add File
                   </>
                 )}
@@ -129,36 +134,37 @@ function App() {
       {/* Main Content Area - Finder Style */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - File List */}
-        <div className="w-64 bg-slate-50 border-r border-slate-200 overflow-y-auto">
+        <div className="w-72 bg-gradient-to-b from-slate-50 to-slate-100 border-r border-indigo-200 overflow-y-auto shadow-xl">
           {/* Sidebar Header */}
-          <div className="px-4 py-3 border-b border-slate-200">
-            <div className="flex items-center gap-2 text-slate-600 text-xs font-semibold uppercase tracking-wider">
-              <Folder className="w-4 h-4" />
-              Documents
+          <div className="px-5 py-4 border-b border-indigo-200 backdrop-blur-lg bg-white/50">
+            <div className="flex items-center gap-3 text-indigo-600 text-sm font-bold uppercase tracking-wider">
+              <Folder className="w-5 h-5 animate-pulse" />
+              My Documents
             </div>
           </div>
 
           {/* File List */}
-          <div className="p-2">
+          <div className="p-3">
             {documents.length === 0 ? (
-              <div className="px-4 py-8 text-center text-slate-400 text-sm">
-                No documents yet
+              <div className="px-4 py-12 text-center text-slate-400 text-sm">
+                <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>No documents yet</p>
               </div>
             ) : (
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {documents.map((doc) => (
                   <div
                     key={doc.id}
                     onClick={() => handleSelectDoc(doc)}
-                    className={`group flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-all ${
+                    className={`group flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-300 ${
                       selectedDoc?.id === doc.id
-                        ? 'bg-indigo-600 text-white'
-                        : 'text-slate-700 hover:bg-slate-200'
+                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/50 scale-105'
+                        : 'text-slate-700 hover:bg-white hover:shadow-md'
                     }`}
                   >
-                    <File className="w-4 h-4 flex-shrink-0" />
+                    <File className="w-5 h-5 flex-shrink-0 transition-all duration-300 group-hover:scale-110" />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium truncate">{doc.name}</div>
+                      <div className="text-sm font-semibold truncate">{doc.name}</div>
                       <div className={`text-xs ${selectedDoc?.id === doc.id ? 'text-indigo-200' : 'text-slate-500'}`}>
                         {(doc.size / 1024).toFixed(1)} KB
                       </div>
@@ -168,11 +174,11 @@ function App() {
                         e.stopPropagation()
                         handleRemoveDoc(doc.id)
                       }}
-                      className={`opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-slate-300 transition-all ${
-                        selectedDoc?.id === doc.id ? 'hover:bg-indigo-700' : ''
+                      className={`opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-red-500/20 transition-all ${
+                        selectedDoc?.id === doc.id ? 'hover:bg-white/20' : ''
                       }`}
                     >
-                      <X className="w-3 h-3" />
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
                 ))}

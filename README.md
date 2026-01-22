@@ -198,15 +198,17 @@ The monorepo supports three AI providers for flexibility and fallback capabiliti
 
 All applications can be deployed to multiple platforms:
 
+### Cloudflare Pages (Recommended)
+- **Deployment:** GitHub integration or Wrangler CLI
+- **Configuration:** `wrangler.toml` in each project
+- **URL:** `https://your-app.pages.dev` or custom domain
+- **Features:** Global CDN, Cloudflare Workers/Functions, Edge deployment, Automatic HTTPS
+- **Functions:** API endpoints via `/functions` directory
+
 ### GitHub Pages
 - **Deployment:** Automatic via GitHub Actions
 - **Configuration:** `.github/workflows/deploy.yml`
 - **URL:** `https://YOUR_USERNAME.github.io/PROJECT_NAME/`
-
-### Vercel
-- **Deployment:** Via Vercel CLI or GitHub integration
-- **Configuration:** `vercel.json` in each project
-- **URL:** `https://PROJECT_NAME.vercel.app/`
 
 ### Coolify
 - **Deployment:** Docker-based deployment
@@ -322,11 +324,11 @@ import { formatDate, parseJSON } from '@utils'
 
 1. **Never commit secrets:** Use `.env.local` for local development
 2. **GitHub Secrets:** Configure all API keys in GitHub repository settings
-3. **Vercel Secrets:** Set environment variables in Vercel dashboard
+3. **Cloudflare Secrets:** Set environment variables in Pages dashboard or via Wrangler CLI
 4. **Coolify Secrets:** Use Coolify's environment variable management
 5. **Token rotation:** Regularly rotate API keys and tokens
-6. **HTTPS only:** All deployments use HTTPS
-7. **CORS configuration:** Properly configure CORS headers
+6. **HTTPS only:** All deployments use HTTPS (automatic with Cloudflare)
+7. **CORS configuration:** Properly configure CORS headers in Cloudflare Workers/Functions
 8. **Input validation:** Always validate user input
 
 ## 📊 Monitoring and Analytics
@@ -355,6 +357,8 @@ npm run dev -- --profile
 ## 📚 Documentation
 
 Detailed implementation guides are available in:
+- **`CLOUDFLARE_DEVELOPER_GUIDE.md`** - Complete Cloudflare Pages + Workers deployment guide
+- **`DEPLOYMENT.md`** - Comprehensive deployment guide for all platforms
 - **`ai_portfolio_deployment_guide_comprehensive.md`** - Complete deployment guide for all projects
 - **Per-project READMEs** - Instructions in each `apps/*/README.md`
 - **Configuration guides** - Details in `config/*/README.md`
@@ -424,8 +428,8 @@ Before deploying to production:
 
 | Platform | Command | Time |
 |----------|---------|------|
+| **Cloudflare Pages** | `wrangler pages deploy dist --project-name=app` | ~1 min |
 | **GitHub Pages** | `git push origin main` | ~2 min |
-| **Vercel** | `vercel --prod` | ~1 min |
 | **Coolify** | Push to main → automatic | ~3 min |
 
 ---

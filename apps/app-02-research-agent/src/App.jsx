@@ -47,73 +47,73 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Stats Bar */}
-      <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-6 py-3">
+      <div className="bg-gradient-to-r from-amber-500 to-red-500 text-white px-6 py-3 shadow-lg shadow-amber-500/30">
         <div className="max-w-7xl mx-auto flex items-center justify-between text-sm font-semibold">
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4" />
-              <span>STATUS: ACTIVE</span>
+            <div className="flex items-center gap-2 transition-all duration-300 hover:scale-105">
+              <Activity className="w-5 h-5 animate-pulse" />
+              <span className="uppercase tracking-wider">STATUS: ACTIVE</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Database className="w-4 h-4" />
-              <span>AGENTS: {parallelMode ? 'PARALLEL' : 'SEQUENTIAL'}</span>
+            <div className="flex items-center gap-2 transition-all duration-300 hover:scale-105">
+              <Database className="w-5 h-5" />
+              <span className="uppercase tracking-wider">AGENTS: {parallelMode ? '⚡ PARALLEL' : '→ SEQUENTIAL'}</span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse" />
-            <span>SYSTEM READY</span>
+          <div className="flex items-center gap-2 backdrop-blur-lg bg-white/20 px-4 py-1.5 rounded-full">
+            <div className="w-2.5 h-2.5 bg-green-300 rounded-full animate-pulse shadow-lg shadow-green-300/50" />
+            <span className="uppercase tracking-wider">SYSTEM READY</span>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto p-6">
         {/* Header Dashboard */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="bg-white rounded-lg shadow-lg border border-stone-200 p-6 mb-6 transition-all duration-300 hover:shadow-xl">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center shadow-lg">
-                <Brain className="w-8 h-8 text-white" />
+              <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-red-500 rounded-xl flex items-center justify-center shadow-2xl shadow-amber-500/50 transition-all duration-300 hover:scale-105">
+                <Brain className="w-9 h-9 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Research Analytics Dashboard</h1>
-                <p className="text-gray-600">Multi-Agent Intelligence Platform</p>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-amber-500 to-red-500 bg-clip-text text-transparent">Research Analytics Dashboard</h1>
+                <p className="text-stone-600 text-lg">Multi-Agent Intelligence Platform</p>
               </div>
             </div>
-            <Target className="w-10 h-10 text-orange-500" />
+            <Target className="w-12 h-12 text-amber-500 transition-all duration-300 hover:scale-110 hover:rotate-12" />
           </div>
 
           {/* Search Control Panel */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2 relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-orange-500" />
+              <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 w-6 h-6 text-amber-500 transition-all duration-300 hover:scale-110" />
               <input
                 type="text"
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleResearch()}
-                placeholder="Enter research topic..."
-                className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+                onKeyPress={(e) => e.key === 'Enter' && !isResearching && handleResearch()}
+                placeholder="Enter research topic... (Press Enter)"
+                className="w-full pl-14 pr-6 py-4 border-2 border-stone-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-300 hover:shadow-md text-lg"
                 disabled={isResearching}
               />
             </div>
-            <div className="flex gap-2">
-              <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-orange-50 border-2 border-orange-200 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors">
+            <div className="flex gap-3">
+              <label className="flex-1 flex items-center justify-center gap-2 px-4 py-4 bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-300 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-amber-200 hover:to-orange-200 transition-all duration-300 hover:scale-105">
                 <input
                   type="checkbox"
                   checked={parallelMode}
                   onChange={(e) => setParallelMode(e.target.checked)}
                   disabled={isResearching}
-                  className="w-4 h-4 text-orange-600 rounded"
+                  className="w-5 h-5 text-amber-600 rounded"
                 />
-                <span className="text-sm font-bold text-gray-700">PARALLEL</span>
+                <span className="text-sm font-bold text-stone-800 uppercase tracking-wider">⚡ PARALLEL</span>
               </label>
               <button
                 onClick={handleResearch}
                 disabled={isResearching || !topic.trim()}
-                className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg font-bold hover:from-orange-600 hover:to-amber-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all shadow-md"
+                className="px-8 py-4 bg-gradient-to-r from-amber-500 to-red-500 text-white rounded-xl font-bold hover:from-amber-600 hover:to-red-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-amber-500/50 hover:shadow-xl hover:scale-105"
               >
                 {isResearching ? (
-                  <Loader className="w-5 h-5 animate-spin" />
+                  <Loader className="w-6 h-6 animate-spin" />
                 ) : (
                   'ANALYZE'
                 )}
@@ -124,14 +124,14 @@ function App() {
 
         {/* Progress Panel */}
         {progress && (
-          <div className="bg-white rounded-lg shadow-sm border-l-4 border-orange-500 p-5 mb-6">
-            <div className="flex items-center gap-3 mb-2">
-              {isResearching && <Loader className="w-5 h-5 animate-spin text-orange-500" />}
-              <span className="text-sm font-bold text-gray-900 uppercase tracking-wide">
+          <div className="bg-white rounded-lg shadow-lg border-l-4 border-amber-500 p-6 mb-6 backdrop-blur-lg bg-white/90 transition-all duration-300 animate-in fade-in slide-in-from-top-4">
+            <div className="flex items-center gap-3 mb-3">
+              {isResearching && <Loader className="w-6 h-6 animate-spin text-amber-500" />}
+              <span className="text-base font-bold bg-gradient-to-r from-amber-500 to-red-500 bg-clip-text text-transparent uppercase tracking-wider">
                 {progress.stage}
               </span>
             </div>
-            <p className="text-sm text-gray-600">{progress.message}</p>
+            <p className="text-sm text-stone-700 leading-relaxed">{progress.message}</p>
             {progress.subquestions && (
               <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">
                 {progress.subquestions.map((q, idx) => (
@@ -200,29 +200,29 @@ function App() {
             <div className="space-y-4">
               {analysis && (
                 <>
-                  <div className="bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg shadow-md p-6 text-white">
-                    <div className="flex items-center justify-between mb-2">
-                      <TrendingUp className="w-6 h-6" />
-                      <span className="text-xs font-bold bg-white/20 px-2 py-1 rounded">LIVE</span>
+                  <div className="bg-gradient-to-br from-amber-500 to-red-500 rounded-xl shadow-lg shadow-amber-500/50 p-6 text-white transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                    <div className="flex items-center justify-between mb-3">
+                      <TrendingUp className="w-7 h-7" />
+                      <span className="text-xs font-bold backdrop-blur-lg bg-white/30 px-3 py-1.5 rounded-full animate-pulse">● LIVE</span>
                     </div>
-                    <div className="text-3xl font-bold mb-1">{analysis.total}</div>
-                    <div className="text-sm font-semibold opacity-90">Total Findings</div>
+                    <div className="text-4xl font-bold mb-2">{analysis.total}</div>
+                    <div className="text-sm font-semibold opacity-90 uppercase tracking-wide">Total Findings</div>
                   </div>
-                  <div className="bg-white rounded-lg shadow-sm border-2 border-orange-200 p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <BarChart className="w-6 h-6 text-orange-500" />
+                  <div className="bg-white rounded-xl shadow-lg border-2 border-amber-300 p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-amber-400">
+                    <div className="flex items-center justify-between mb-3">
+                      <BarChart className="w-7 h-7 text-amber-500" />
                     </div>
-                    <div className="text-3xl font-bold mb-1 text-gray-900">
+                    <div className="text-4xl font-bold mb-2 bg-gradient-to-r from-amber-500 to-red-500 bg-clip-text text-transparent">
                       {(analysis.avgConfidence * 100).toFixed(0)}%
                     </div>
-                    <div className="text-sm font-semibold text-gray-600">Avg Confidence</div>
+                    <div className="text-sm font-semibold text-stone-600 uppercase tracking-wide">Avg Confidence</div>
                   </div>
-                  <div className="bg-white rounded-lg shadow-sm border-2 border-amber-200 p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <Target className="w-6 h-6 text-amber-500" />
+                  <div className="bg-white rounded-xl shadow-lg border-2 border-red-300 p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-red-400">
+                    <div className="flex items-center justify-between mb-3">
+                      <Target className="w-7 h-7 text-red-500" />
                     </div>
-                    <div className="text-3xl font-bold mb-1 text-gray-900">{analysis.highConfidence}</div>
-                    <div className="text-sm font-semibold text-gray-600">High Confidence</div>
+                    <div className="text-4xl font-bold mb-2 bg-gradient-to-r from-red-500 to-amber-500 bg-clip-text text-transparent">{analysis.highConfidence}</div>
+                    <div className="text-sm font-semibold text-stone-600 uppercase tracking-wide">High Confidence</div>
                   </div>
                 </>
               )}

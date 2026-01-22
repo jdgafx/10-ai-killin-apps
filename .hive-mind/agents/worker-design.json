@@ -1,0 +1,24 @@
+{
+  "agent_id": "worker-design",
+  "role": "Premium-Template-Designer",
+  "status": "active",
+  "created": "2026-01-21T18:12:00Z",
+  "task": "Find and implement premium templates for all 10 apps",
+  "research_sources": [
+    "godly.website",
+    "dribbble.com",
+    "awwwards.com"
+  ],
+  "apps_to_redesign": [
+    {"id": "app-01", "type": "chat", "search": "AI chat interface"},
+    {"id": "app-02", "type": "dashboard", "search": "research dashboard analytics"},
+    {"id": "app-03", "type": "editor", "search": "code editor UI builder"},
+    {"id": "app-04", "type": "database", "search": "SQL database interface"},
+    {"id": "app-05", "type": "audio", "search": "voice chat audio player"},
+    {"id": "app-06", "type": "document", "search": "document processor PDF"},
+    {"id": "app-07", "type": "search", "search": "search engine interface"},
+    {"id": "app-08", "type": "content", "search": "content generator editor"},
+    {"id": "app-09", "type": "network", "search": "agent orchestrator dashboard"},
+    {"id": "app-10", "type": "knowledge", "search": "knowledge base library"}
+  ]
+}

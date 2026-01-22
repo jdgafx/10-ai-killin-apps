@@ -81,32 +81,36 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600 relative overflow-hidden">
-      {/* Radial Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-radial from-purple-400/30 via-transparent to-transparent"></div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-purple-700 relative overflow-hidden">
+      {/* Animated Background Gradient */}
+      <div className="absolute inset-0 bg-gradient-radial from-purple-400/30 via-transparent to-transparent animate-pulse"></div>
       
-      <div className="relative min-h-screen flex flex-col items-center justify-center p-4">
+      {/* Floating Orbs */}
+      <div className="absolute top-20 left-20 w-64 h-64 bg-pink-400/30 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-400/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+      
+      <div className="relative min-h-screen flex flex-col items-center justify-center p-6">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-white mb-2 drop-shadow-lg">Voice Chat</h1>
-          <p className="text-white/90 text-lg">Speak to interact with AI</p>
+        <div className="text-center mb-10 animate-in fade-in duration-700">
+          <h1 className="text-6xl font-bold text-white mb-3 drop-shadow-2xl bg-gradient-to-r from-white to-pink-200 bg-clip-text text-transparent">Voice Chat AI</h1>
+          <p className="text-white/90 text-xl backdrop-blur-lg bg-white/10 inline-block px-6 py-2 rounded-full border border-white/30 shadow-lg">Speak naturally with AI</p>
         </div>
 
         {/* Central Circular Mic Area */}
-        <div className="relative mb-8">
+        <div className="relative mb-10">
           {/* Outer Glow Ring */}
-          <div className={`absolute inset-0 rounded-full blur-2xl transition-all duration-300 ${
-            isRecording ? 'bg-yellow-300 animate-pulse scale-150' : 'bg-white/20 scale-125'
+          <div className={`absolute inset-0 rounded-full blur-3xl transition-all duration-500 ${
+            isRecording ? 'bg-yellow-300 animate-pulse scale-150' : 'bg-white/30 scale-125'
           }`}></div>
           
           {/* Waveform Circle */}
           <div className="relative">
-            <div className={`w-64 h-64 rounded-full flex items-center justify-center transition-all duration-300 ${
+            <div className={`w-80 h-80 rounded-full flex items-center justify-center transition-all duration-500 shadow-2xl ${
               isRecording 
-                ? 'bg-gradient-to-br from-yellow-400 to-yellow-500 shadow-2xl shadow-yellow-500/50 scale-105' 
+                ? 'bg-gradient-to-br from-yellow-400 to-orange-500 shadow-yellow-500/50 scale-110' 
                 : isSpeaking
-                ? 'bg-gradient-to-br from-green-400 to-emerald-500 shadow-2xl shadow-green-500/50 scale-105'
-                : 'bg-gradient-to-br from-white to-gray-100 shadow-xl'
+                ? 'bg-gradient-to-br from-green-400 to-emerald-500 shadow-green-500/50 scale-110'
+                : 'bg-gradient-to-br from-white to-gray-100 shadow-purple-500/50'
             }`}>
               {/* Inner Waveform Ring */}
               {(isRecording || isSpeaking) && (
@@ -118,13 +122,13 @@ function App() {
               {/* Mic Button */}
               <button
                 onClick={isRecording ? handleStopRecording : handleStartRecording}
-                className={`w-40 h-40 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 ${
+                className={`w-48 h-48 rounded-full flex items-center justify-center transition-all duration-500 transform hover:scale-110 shadow-2xl ${
                   isRecording 
-                    ? 'bg-red-500 hover:bg-red-600 shadow-xl' 
-                    : 'bg-purple-500 hover:bg-purple-600 shadow-xl'
+                    ? 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 animate-pulse' 
+                    : 'bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700'
                 }`}
               >
-                <Mic className={`w-20 h-20 text-white ${isRecording ? 'animate-pulse' : ''}`} />
+                <Mic className={`w-24 h-24 text-white ${isRecording ? 'animate-pulse' : ''}`} />
               </button>
             </div>
           </div>

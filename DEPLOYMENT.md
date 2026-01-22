@@ -1,190 +1,305 @@
 # Deployment Guide
 
-This repository includes complete deployment infrastructure for all platforms.
+> **Cloudflare Pages** is the primary deployment platform for all 10 AI applications.
 
-## 🚀 Deployment Options
+---
 
-### 1. Docker (Local/Production)
-**Best for**: Local testing, production servers, VPS hosting
+## Quick Start
 
 ```bash
-# Quick start
+# 1. Set Cloudflare credentials
+export CLOUDFLARE_API_TOKEN="your-api-token"
+export CLOUDFLARE_ACCOUNT_ID="your-account-id"
+
+# 2. Build and deploy an app
+cd apps/app-01-rag-chat
+npm run build
+npx wrangler pages deploy dist --project-name="app-01-rag-chat"
+```
+
+---
+
+## Deployment Options
+
+### 1. Cloudflare Pages (Primary - Recommended)
+
+**Best for**: Edge deployment, global CDN, serverless functions, zero cold starts
+
+| Feature                   | Details                        |
+| ------------------------- | ------------------------------ |
+| **Cost**                  | Free tier (unlimited requests) |
+| **SSL**                   | Automatic                      |
+| **Deployment Time**       | ~1 min                         |
+| **Custom Domain**         | Yes                            |
+| **Environment Variables** | Yes (encrypted)                |
+| **Serverless Functions**  | Yes (Workers)                  |
+| **Global CDN**            | 300+ edge locations            |
+
+**URLs**: `https://app-name.pages.dev`
+
+See [Cloudflare Deployment](#cloudflare-deployment-details) below for complete instructions.
+
+---
+
+### 2. Vercel (Alternative)
+
+**Best for**: Quick deployments, preview URLs, if Cloudflare is unavailable
+
+```bash
+npm install -g vercel
+vercel login
+cd apps/app-01-rag-chat
+vercel --prod
+```
+
+---
+
+### 3. Docker (Local Development)
+
+**Best for**: Local testing, self-hosted production
+
+```bash
 cp .env.example .env
 ./scripts/docker-deploy.sh
 ```
 
-📖 **Full Guide**: [docs/DOCKER_QUICKSTART.md](docs/DOCKER_QUICKSTART.md)
+See [docs/DOCKER_QUICKSTART.md](docs/DOCKER_QUICKSTART.md).
 
 ---
 
-### 2. Coolify (Recommended for Production)
-**Best for**: Self-hosted production, automatic deployments, SSL management
+## Cloudflare Deployment Details
 
-Coolify provides Heroku/Vercel-like experience with full control.
+### Prerequisites
 
-📖 **Full Guide**: [docs/COOLIFY_DEPLOYMENT.md](docs/COOLIFY_DEPLOYMENT.md)
+1. **Cloudflare Account**: [Sign up](https://dash.cloudflare.com/sign-up)
+2. **Wrangler CLI**: `npm install -g wrangler`
+3. **API Token**: Create at [Cloudflare Dashboard](https://dash.cloudflare.com/profile/api-tokens)
+   - Use template: "Edit Cloudflare Workers"
+   - Permissions needed: Workers Scripts (Edit), Pages (Edit)
 
-**Features**:
-- ✅ Automatic SSL certificates (Let's Encrypt)
-- ✅ One-click deployments
-- ✅ Built-in monitoring
-- ✅ Auto-scaling ready
-- ✅ Zero-downtime updates
-
----
-
-### 3. GitHub Pages
-**Best for**: Free static hosting, portfolio showcase
+### Step 1: Authenticate
 
 ```bash
-# Automatic deployment on push to main
-git push origin main
+# Interactive login (opens browser)
+wrangler login
+
+# Verify authentication
+wrangler whoami
 ```
 
-📖 **Configuration**: `.github/workflows/deploy.yml`
-
----
-
-### 4. Vercel
-**Best for**: Fastest deployment, edge functions, preview deployments
+Or use environment variables for CI/CD:
 
 ```bash
-npm install -g vercel
-vercel --prod
+export CLOUDFLARE_API_TOKEN="your-token"
+export CLOUDFLARE_ACCOUNT_ID="your-account-id"
 ```
 
-📖 **Full Guide**: [docs/VERCEL_DEPLOYMENT.md](docs/VERCEL_DEPLOYMENT.md)
+### Step 2: Deploy a Single App
 
----
-
-## 📊 Platform Comparison
-
-| Feature | Docker | Coolify | GitHub Pages | Vercel |
-|---------|--------|---------|--------------|--------|
-| **Cost** | Free | Free (self-hosted) | Free | Free tier |
-| **SSL** | Manual | Automatic | Automatic | Automatic |
-| **Deployment Time** | 5 min | 3 min | 2 min | 1 min |
-| **Custom Domain** | ✅ | ✅ | ✅ | ✅ |
-| **Environment Variables** | ✅ | ✅ | ❌ | ✅ |
-| **Auto-scaling** | Manual | ✅ | N/A | ✅ |
-| **Build Control** | Full | Full | Limited | Limited |
-| **Best For** | Production | Production | Static sites | Edge deployments |
-
----
-
-## 🎯 Recommended Setup
-
-### Development
 ```bash
-# Local Docker deployment
-./scripts/docker-deploy.sh
+cd apps/app-01-rag-chat
+npm run build
+npx wrangler pages deploy dist --project-name="app-01-rag-chat" --commit-dirty=true
 ```
 
-### Staging
+### Step 3: Deploy All Apps
+
 ```bash
-# Coolify staging environment
-# Automatic deployment from 'staging' branch
+# Deploy all 10 apps
+./scripts/deploy-cloudflare.sh
+
+# Or manually:
+for app in apps/app-*/; do
+  cd "$app"
+  npm run build
+  npx wrangler pages deploy dist --project-name="$(basename $app)"
+  cd ../..
+done
 ```
 
-### Production
+### Step 4: Set Environment Variables (Secrets)
+
 ```bash
-# Coolify production environment
-# Automatic deployment from 'main' branch
+# Navigate to app directory
+cd apps/app-01-rag-chat
+
+# Set secrets (encrypted at rest)
+echo "your-api-key" | wrangler secret put MINIMAX_API_KEY
+echo "your-api-key" | wrangler secret put DEEPSEEK_API_KEY
+echo "your-api-key" | wrangler secret put GEMINI_API_KEY
+
+# List secrets
+wrangler secret list
+```
+
+Or via Cloudflare Dashboard: **Pages > Project > Settings > Environment Variables**
+
+---
+
+## GitHub Actions CI/CD
+
+Create `.github/workflows/deploy.yml`:
+
+```yaml
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/app-01-rag-chat/dist --project-name=app-01-rag-chat
+```
+
+### Setting GitHub Secrets
+
+```bash
+gh secret set CLOUDFLARE_API_TOKEN --body "your-token"
+gh secret set CLOUDFLARE_ACCOUNT_ID --body "your-account-id"
+gh secret set MINIMAX_API_KEY --body "your-key"
+gh secret set DEEPSEEK_API_KEY --body "your-key"
+gh secret set GEMINI_API_KEY --body "your-key"
 ```
 
 ---
 
-## 🔑 Environment Variables
+## Environment Variables
 
-All deployments require API keys:
+### Required API Keys
 
-```env
-VITE_MINIMAX_API_KEY=your_key_here
-VITE_DEEPSEEK_API_KEY=your_key_here
-VITE_GEMINI_CLIENT_ID=your_client_id_here
+| Variable            | Provider            | Required |
+| ------------------- | ------------------- | -------- |
+| `MINIMAX_API_KEY`   | MiniMax (primary)   | Yes      |
+| `DEEPSEEK_API_KEY`  | DeepSeek (fallback) | Yes      |
+| `GEMINI_API_KEY`    | Google Gemini       | Optional |
+| `ANTHROPIC_API_KEY` | Anthropic Claude    | Optional |
+
+### Configuration
+
+| Variable              | Default      | Description         |
+| --------------------- | ------------ | ------------------- |
+| `DEFAULT_AI_PROVIDER` | `minimax`    | Primary AI provider |
+| `ENVIRONMENT`         | `production` | Environment name    |
+
+### Local Development
+
+Create `.env.local` (never commit):
+
+```bash
+VITE_MINIMAX_API_KEY=sk-cp-your-key
+VITE_DEEPSEEK_API_KEY=sk-your-key
+VITE_GEMINI_API_KEY=your-key
 ```
 
-**Setup**:
-1. Copy `.env.example` to `.env`
-2. Add your API keys
-3. For Coolify: Add in dashboard
-4. For Vercel: Use `vercel env add`
-5. For GitHub Pages: Add in repo secrets
+---
+
+## Current Deployment Status
+
+See [CLOUDFLARE_DEPLOYMENT_STATUS.md](CLOUDFLARE_DEPLOYMENT_STATUS.md) for live URLs.
+
+### Live URLs
+
+| App                       | URL                                         |
+| ------------------------- | ------------------------------------------- |
+| app-01-rag-chat           | https://app-01-rag-chat.pages.dev           |
+| app-10-rag-knowledge-base | https://app-10-rag-knowledge-base.pages.dev |
 
 ---
 
-## 📋 Pre-Deployment Checklist
-
-- [ ] Environment variables configured
-- [ ] API keys obtained and tested
-- [ ] Domain DNS configured (if applicable)
-- [ ] SSL certificate ready (for custom domains)
-- [ ] Build succeeds locally (`npm run build`)
-- [ ] All tests passing (`npm run test`)
-- [ ] Documentation updated
-- [ ] Secrets not committed to git
-
----
-
-## 🆘 Quick Troubleshooting
+## Troubleshooting
 
 ### Build Fails
+
 ```bash
-# Clean and rebuild
-npm run clean
+rm -rf node_modules dist
 npm install
 npm run build
 ```
 
+### Authentication Issues
+
+```bash
+# Re-authenticate
+wrangler logout
+wrangler login
+
+# Verify
+wrangler whoami
+```
+
 ### Environment Variables Not Loading
-```bash
-# Docker: Check .env file exists
-ls -la .env
 
-# Coolify: Verify in dashboard
-# Vercel: Check with `vercel env ls`
+- Cloudflare: Check in Pages > Project > Settings > Environment Variables
+- Verify variable names match code (case-sensitive)
+- Rebuild and redeploy after adding variables
+
+### Deployment Stuck
+
+```bash
+# List deployments
+npx wrangler pages deployment list --project-name="app-01-rag-chat"
+
+# Check Wrangler version
+wrangler --version
 ```
 
-### Port Already in Use
-```bash
-# Find process using port
-lsof -i:8001
+---
 
-# Kill specific process (use actual PID)
-kill -9 <PID>
-```
+## Platform Comparison
+
+| Feature                  | Cloudflare Pages   | Vercel               | Docker             |
+| ------------------------ | ------------------ | -------------------- | ------------------ |
+| **Cost**                 | Free (unlimited)   | Free (limited)       | Free (self-hosted) |
+| **Edge CDN**             | 300+ locations     | 30+ locations        | N/A                |
+| **Cold Starts**          | None               | ~100ms               | N/A                |
+| **Serverless Functions** | Workers (included) | Serverless Functions | N/A                |
+| **Custom Domain**        | Yes                | Yes                  | Yes                |
+| **SSL**                  | Automatic          | Automatic            | Manual/Caddy       |
+| **Best For**             | Production         | Quick deploys        | Local/Testing      |
 
 ---
 
-## 📚 Detailed Documentation
+## Additional Documentation
 
-- **[Infrastructure Summary](docs/INFRASTRUCTURE_SUMMARY.md)** - Overview of all deployment infrastructure
-- **[Docker Quick Start](docs/DOCKER_QUICKSTART.md)** - Docker deployment guide
-- **[Coolify Guide](docs/COOLIFY_DEPLOYMENT.md)** - Complete Coolify setup
-- **[Vercel Guide](docs/VERCEL_DEPLOYMENT.md)** - Vercel deployment guide
-
----
-
-## 🎉 Success!
-
-After successful deployment, your applications will be available at:
-
-**Local Docker**:
-- http://localhost:8001 through http://localhost:8010
-
-**Coolify/Production**:
-- https://app-01.yourdomain.com
-- https://app-02.yourdomain.com
-- etc.
-
-**GitHub Pages**:
-- https://username.github.io/app-01-ai-code-reviewer
-- etc.
-
-**Vercel**:
-- https://app-01-ai-code-reviewer.vercel.app
-- etc.
+- [CLOUDFLARE_DEVELOPER_GUIDE.md](CLOUDFLARE_DEVELOPER_GUIDE.md) - Cloudflare Workers/Functions development
+- [docs/API_KEYS_SETUP.md](docs/API_KEYS_SETUP.md) - API key configuration
+- [docs/DOCKER_QUICKSTART.md](docs/DOCKER_QUICKSTART.md) - Docker deployment
+- [ai_portfolio_deployment_guide_comprehensive.md](ai_portfolio_deployment_guide_comprehensive.md) - Complete Cloudflare Workers SDK guide
 
 ---
 
-Built with ❤️ by Coolify-01 & Coolify-02 Agents
+## Pre-Deployment Checklist
+
+- [ ] Environment variables configured
+- [ ] API keys obtained and tested
+- [ ] Build succeeds locally (`npm run build`)
+- [ ] Wrangler authenticated (`wrangler whoami`)
+- [ ] Secrets not committed to git
+
+---
+
+**Recommended Platform: Cloudflare Pages**
+
+For edge performance, global CDN, and zero cold starts.

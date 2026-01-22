@@ -1,5 +1,12 @@
 # Vercel Deployment Guide
 
+> **DEPRECATED**: Cloudflare Pages is now the primary deployment platform.
+> See [DEPLOYMENT.md](../DEPLOYMENT.md) for current deployment instructions.
+>
+> This guide remains available as an alternative deployment option.
+
+---
+
 Complete guide for deploying all 10 AI applications to Vercel with automated configuration, environment management, and troubleshooting.
 
 ## 📋 Table of Contents
@@ -53,6 +60,7 @@ chmod +x scripts/setup-vercel.sh
 ```
 
 **That's it!** The script will:
+
 1. Generate `vercel.json` for each project
 2. Link projects to your Vercel account
 3. Set up environment variables
@@ -128,12 +136,12 @@ cp ../../config/vercel/vercel-template.json ./vercel.json
 
 All projects require these variables:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `VITE_MINIMAX_API_KEY` | MiniMax API key | `sk-cp-...` |
-| `VITE_DEEPSEEK_API_KEY` | DeepSeek API key | `sk-...` |
-| `VITE_GITHUB_COPILOT_TOKEN` | GitHub Copilot token | `ghp_...` |
-| `VITE_GEMINI_CLIENT_ID` | Google OAuth client ID | `....apps.googleusercontent.com` |
+| Variable                    | Description            | Example                          |
+| --------------------------- | ---------------------- | -------------------------------- |
+| `VITE_MINIMAX_API_KEY`      | MiniMax API key        | `sk-cp-...`                      |
+| `VITE_DEEPSEEK_API_KEY`     | DeepSeek API key       | `sk-...`                         |
+| `VITE_GITHUB_COPILOT_TOKEN` | GitHub Copilot token   | `ghp_...`                        |
+| `VITE_GEMINI_CLIENT_ID`     | Google OAuth client ID | `....apps.googleusercontent.com` |
 
 #### Setting Variables - Automated
 
@@ -330,6 +338,7 @@ Each project's `vercel.json` includes:
 ```
 
 This ensures:
+
 - Assets are cached for 1 year
 - All routes fallback to `index.html` (SPA support)
 - Static files served directly
@@ -382,6 +391,7 @@ NODE_ENV=production
 ### Preview Deployments
 
 Vercel automatically creates preview deployments for:
+
 - Every `git push` to non-main branches
 - Every pull request
 
@@ -406,12 +416,14 @@ vercel dev
 ```
 
 This starts:
+
 - Local development server on `http://localhost:3000`
 - Hot module replacement (HMR) enabled
 - Environment variables from Vercel
 - Serverless functions simulation
 
 **Benefits:**
+
 - Test with production environment variables
 - Simulate Vercel's production environment locally
 - Fast refresh on code changes
@@ -438,6 +450,7 @@ vercel inspect <deployment-url>
 ### Automatic GitHub Integration
 
 Enable GitHub integration for:
+
 - Automatic preview deployments on PR
 - Deployment status checks
 - Comment with preview URL on PR
@@ -583,7 +596,7 @@ const fetchWithRetry = async (url, options, retries = 3) => {
     return await fetch(url, options);
   } catch (error) {
     if (retries > 0) {
-      await new Promise(r => setTimeout(r, 1000 * (4 - retries)));
+      await new Promise((r) => setTimeout(r, 1000 * (4 - retries)));
       return fetchWithRetry(url, options, retries - 1);
     }
     throw error;
@@ -641,6 +654,7 @@ vercel domains assign example.com ai-code-reviewer
 **DNS Configuration:**
 
 For `example.com`:
+
 ```
 Type: A
 Name: @
@@ -648,6 +662,7 @@ Value: 76.76.21.21
 ```
 
 For `www.example.com`:
+
 ```
 Type: CNAME
 Name: www
@@ -693,12 +708,12 @@ Use Edge Functions for ultra-low latency:
 ```javascript
 // api/edge-hello.js
 export const config = {
-  runtime: 'edge',
+  runtime: "edge",
 };
 
 export default async function handler(req) {
-  return new Response(JSON.stringify({ message: 'Hello from Edge!' }), {
-    headers: { 'content-type': 'application/json' },
+  return new Response(JSON.stringify({ message: "Hello from Edge!" }), {
+    headers: { "content-type": "application/json" },
   });
 }
 ```
@@ -720,18 +735,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
-      
+
       - name: Install dependencies
         run: npm install
-      
+
       - name: Build
         run: npm run build
-      
+
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
         with:
@@ -786,25 +801,28 @@ function App() {
 ### Security Best Practices
 
 1. **Rotate Secrets Regularly**
+
    ```bash
    # Remove old secret
    vercel env rm VITE_MINIMAX_API_KEY production
-   
+
    # Add new secret
    vercel env add VITE_MINIMAX_API_KEY production
    ```
 
 2. **Use Environment-Specific Secrets**
+
    ```bash
    # Set different values for preview vs production
    vercel env add VITE_API_URL preview
    # Value: https://api-staging.example.com
-   
+
    vercel env add VITE_API_URL production
    # Value: https://api.example.com
    ```
 
 3. **Enable Password Protection**
+
    ```json
    {
      "public": false
@@ -852,33 +870,33 @@ Before deploying to production:
 
 ### Common Commands
 
-| Command | Description |
-|---------|-------------|
-| `vercel` | Deploy to preview |
-| `vercel --prod` | Deploy to production |
-| `vercel dev` | Start local dev server with Vercel env |
-| `vercel logs <url>` | View deployment logs |
-| `vercel inspect <url>` | Inspect deployment details |
-| `vercel env ls` | List environment variables |
-| `vercel env add <KEY>` | Add environment variable |
-| `vercel env pull` | Pull env vars to `.env.local` |
-| `vercel link` | Link local project to Vercel |
-| `vercel domains` | Manage domains |
-| `vercel whoami` | Check authentication status |
+| Command                | Description                            |
+| ---------------------- | -------------------------------------- |
+| `vercel`               | Deploy to preview                      |
+| `vercel --prod`        | Deploy to production                   |
+| `vercel dev`           | Start local dev server with Vercel env |
+| `vercel logs <url>`    | View deployment logs                   |
+| `vercel inspect <url>` | Inspect deployment details             |
+| `vercel env ls`        | List environment variables             |
+| `vercel env add <KEY>` | Add environment variable               |
+| `vercel env pull`      | Pull env vars to `.env.local`          |
+| `vercel link`          | Link local project to Vercel           |
+| `vercel domains`       | Manage domains                         |
+| `vercel whoami`        | Check authentication status            |
 
 ### URLs After Deployment
 
-| Project | Production URL |
-|---------|---------------|
-| AI Code Reviewer | `https://ai-code-reviewer.vercel.app` |
-| Document Chat | `https://document-chat.vercel.app` |
-| Image Generator | `https://image-generator.vercel.app` |
-| Voice Assistant | `https://voice-assistant.vercel.app` |
-| Code Explainer | `https://code-explainer.vercel.app` |
-| Test Generator | `https://test-generator.vercel.app` |
-| API Integrator | `https://api-integrator.vercel.app` |
-| Data Visualizer | `https://data-visualizer.vercel.app` |
-| Autonomous Agent | `https://autonomous-agent.vercel.app` |
+| Project            | Production URL                          |
+| ------------------ | --------------------------------------- |
+| AI Code Reviewer   | `https://ai-code-reviewer.vercel.app`   |
+| Document Chat      | `https://document-chat.vercel.app`      |
+| Image Generator    | `https://image-generator.vercel.app`    |
+| Voice Assistant    | `https://voice-assistant.vercel.app`    |
+| Code Explainer     | `https://code-explainer.vercel.app`     |
+| Test Generator     | `https://test-generator.vercel.app`     |
+| API Integrator     | `https://api-integrator.vercel.app`     |
+| Data Visualizer    | `https://data-visualizer.vercel.app`    |
+| Autonomous Agent   | `https://autonomous-agent.vercel.app`   |
 | RAG Knowledge Base | `https://rag-knowledge-base.vercel.app` |
 
 ---

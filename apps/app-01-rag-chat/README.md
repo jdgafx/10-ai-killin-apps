@@ -1,15 +1,16 @@
 # Multi-Model AI Chat Platform with RAG
 
-A vector-powered chat application with Retrieval-Augmented Generation (RAG) supporting multiple AI providers (MiniMax, Google Gemini, DeepSeek).
+A production-ready vector-powered chat application with Retrieval-Augmented Generation (RAG) using Anthropic Claude via Cloudflare Workers.
 
 ## Features
 
-- 🤖 **Multi-Provider Support**: Switch between MiniMax, Gemini, and DeepSeek
+- 🤖 **Real AI Integration**: Anthropic Claude 3.5 Sonnet via Cloudflare Workers
 - 📚 **RAG Implementation**: Vector-based document retrieval for context-aware responses
 - 💾 **Client-Side Vector Store**: LocalStorage-based vector database with cosine similarity
 - 📄 **Document Upload**: Upload and index text documents for RAG queries
 - 🎯 **Source Citations**: See which documents were used to answer your questions
 - 🎨 **Modern UI**: Clean, responsive interface with Tailwind CSS
+- ⚡ **Edge Computing**: Global deployment with zero cold starts
 
 ## Tech Stack
 
@@ -54,29 +55,65 @@ The application uses a client-side vector store implementation:
 - LocalStorage persistence
 - Support for metadata and chunking
 
-## Deployment
+## API Endpoint
 
-### GitHub Pages
-```bash
-npm run build
-# Deploy dist/ folder to GitHub Pages
+**POST /api/chat**
+
+Real Anthropic Claude API integration via Cloudflare Workers.
+
+**Request:**
+```json
+{
+  "message": "Your question here",
+  "context": "Retrieved document context (optional)"
+}
 ```
 
-### Vercel
+**Response:**
+```json
+{
+  "content": "AI response text",
+  "model": "claude-3-5-sonnet-20241022",
+  "usage": {
+    "input_tokens": 150,
+    "output_tokens": 200
+  }
+}
+```
+
+**Environment Variables (Cloudflare):**
+- `ANTHROPIC_API_KEY`: Your Anthropic API key
+
+## Deployment
+
+### Cloudflare Pages (Recommended)
+
+**Using Wrangler CLI:**
+```bash
+npm run build
+wrangler pages deploy dist --project-name=app-01-rag-chat
+```
+
+**Environment Setup:**
+```bash
+# Set secrets in Cloudflare dashboard or via CLI
+wrangler pages secret put ANTHROPIC_API_KEY
+```
+
+**See full guide:** `/CLOUDFLARE_DEVELOPER_GUIDE.md`
+
+### Alternative Deployments
+
+**Vercel:**
 ```bash
 vercel deploy
 ```
 
-### Coolify
-Use the provided Dockerfile for deployment.
-
-## Environment Variables
-
-- `VITE_MINIMAX_API_KEY`: MiniMax API key
-- `VITE_MINIMAX_GROUP_ID`: MiniMax group ID
-- `VITE_GEMINI_API_KEY`: Google Gemini API key
-- `VITE_DEEPSEEK_API_KEY`: DeepSeek API key
-- `VITE_BASE_PATH`: Base path for deployment (e.g., `/app-01-rag-chat`)
+**GitHub Pages:**
+```bash
+npm run build
+# Deploy dist/ folder to GitHub Pages
+```
 
 ## Project Structure
 

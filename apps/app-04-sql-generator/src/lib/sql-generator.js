@@ -66,7 +66,7 @@ Generate SQL following the rules above. Return ONLY valid JSON.`
     try {
       // Extract JSON if wrapped in markdown code blocks
       const jsonMatch = content.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/) || 
-                       content.match(/(\{[\s\S]*\}/)
+                       content.match(/(\{[\s\S]*?\})/)
       const jsonStr = jsonMatch ? jsonMatch[1] : content
       return JSON.parse(jsonStr)
     } catch (parseError) {

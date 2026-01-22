@@ -1,5 +1,12 @@
 # Coolify Deployment Guide for AI Portfolio
 
+> **NOTE**: Cloudflare Pages is now the primary deployment platform.
+> See [DEPLOYMENT.md](../DEPLOYMENT.md) for current deployment instructions.
+>
+> This guide remains available for self-hosted deployments.
+
+---
+
 Complete guide to deploying all 10 AI Portfolio applications using Coolify, a self-hosted alternative to Heroku/Netlify/Vercel.
 
 ## 📋 Table of Contents
@@ -18,7 +25,7 @@ Complete guide to deploying all 10 AI Portfolio applications using Coolify, a se
 
 ### Server Requirements
 
-- **VPS/Cloud Server**: 
+- **VPS/Cloud Server**:
   - Minimum: 2 CPU cores, 4GB RAM, 50GB storage
   - Recommended: 4 CPU cores, 8GB RAM, 100GB storage
 - **Operating System**: Ubuntu 22.04 LTS or Debian 11+
@@ -50,6 +57,7 @@ curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
 ### 2. Initial Coolify Configuration
 
 1. **Access Coolify Dashboard**:
+
    ```
    http://your-server-ip:8000
    ```
@@ -148,6 +156,7 @@ For each of the 10 applications:
    - **Dockerfile Path**: `config/docker/Dockerfile.template`
 
 3. **Set Build Arguments**:
+
    ```
    APP_NAME=app-01-ai-code-reviewer
    NODE_ENV=production
@@ -174,18 +183,18 @@ For each of the 10 applications:
 
 #### Step 2: Repeat for All 10 Apps
 
-| App # | Name | Port |
-|-------|------|------|
-| 01 | app-01-ai-code-reviewer | 8001 |
-| 02 | app-02-document-chat | 8002 |
-| 03 | app-03-image-generator | 8003 |
-| 04 | app-04-voice-assistant | 8004 |
-| 05 | app-05-code-explainer | 8005 |
-| 06 | app-06-test-generator | 8006 |
-| 07 | app-07-api-integrator | 8007 |
-| 08 | app-08-data-visualizer | 8008 |
-| 09 | app-09-autonomous-agent | 8009 |
-| 10 | app-10-rag-knowledge-base | 8010 |
+| App # | Name                      | Port |
+| ----- | ------------------------- | ---- |
+| 01    | app-01-ai-code-reviewer   | 8001 |
+| 02    | app-02-document-chat      | 8002 |
+| 03    | app-03-image-generator    | 8003 |
+| 04    | app-04-voice-assistant    | 8004 |
+| 05    | app-05-code-explainer     | 8005 |
+| 06    | app-06-test-generator     | 8006 |
+| 07    | app-07-api-integrator     | 8007 |
+| 08    | app-08-data-visualizer    | 8008 |
+| 09    | app-09-autonomous-agent   | 8009 |
+| 10    | app-10-rag-knowledge-base | 8010 |
 
 ### Method 2: Deploy via Docker Compose (Advanced)
 
@@ -228,7 +237,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Deploy to Coolify
         env:
           COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
@@ -254,6 +263,7 @@ TTL: 3600
 ```
 
 Example subdomains:
+
 - `code-reviewer.yourdomain.com` → App 01
 - `document-chat.yourdomain.com` → App 02
 - `image-gen.yourdomain.com` → App 03
@@ -284,6 +294,7 @@ TTL: 3600
 ```
 
 Access apps at:
+
 - `app-01.apps.yourdomain.com`
 - `app-02.apps.yourdomain.com`
 - etc.
@@ -293,12 +304,14 @@ Access apps at:
 ### View Container Logs
 
 **In Coolify Dashboard**:
+
 1. Navigate to **Project**
 2. Click **Logs** tab
 3. View real-time logs
 4. Filter by severity: Info, Warning, Error
 
 **Via SSH**:
+
 ```bash
 # View all logs
 docker-compose logs -f
@@ -313,11 +326,13 @@ docker-compose logs --tail=100 app-02-document-chat
 ### Health Monitoring
 
 **Built-in Health Checks**:
+
 - Endpoint: `http://localhost:8001/health`
 - Returns: `200 OK` if healthy
 - Automated restart on failure
 
 **Monitor Container Status**:
+
 ```bash
 # Check all containers
 docker-compose ps
@@ -329,11 +344,13 @@ docker ps | grep app-01
 ### Resource Usage
 
 **In Coolify Dashboard**:
+
 - Navigate to **Monitoring**
 - View CPU, Memory, Disk usage
 - Set up alerts for thresholds
 
 **Via SSH**:
+
 ```bash
 # Real-time resource usage
 docker stats
@@ -399,6 +416,7 @@ services:
 **Issue**: HTTPS not working
 
 1. **Check DNS propagation**:
+
    ```bash
    dig code-reviewer.yourdomain.com
    ```
@@ -438,7 +456,7 @@ Override default Nginx settings:
 server {
     # Rate limiting
     limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
-    
+
     location /api {
         limit_req zone=api_limit burst=20 nodelay;
         proxy_pass http://backend;
@@ -502,18 +520,21 @@ upstream app01 {
 ### Performance Optimization
 
 **1. Enable Caching**:
+
 ```nginx
 # Add to nginx.conf
 proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=app_cache:10m;
 ```
 
 **2. Optimize Docker Images**:
+
 ```dockerfile
 # Multi-stage builds reduce image size by 60-80%
 # Already implemented in Dockerfile.template
 ```
 
 **3. Resource Limits**:
+
 ```yaml
 # docker-compose.yml
 services:
@@ -521,7 +542,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
 ```
 
@@ -548,7 +569,7 @@ networks:
     driver: bridge
   backend:
     driver: bridge
-    internal: true  # No external access
+    internal: true # No external access
 ```
 
 ### 3. Regular Updates
@@ -571,15 +592,18 @@ docker image prune -f
 ## 📞 Support & Resources
 
 ### Official Documentation
+
 - **Coolify Docs**: https://coolify.io/docs
 - **Docker Docs**: https://docs.docker.com
 - **Nginx Docs**: https://nginx.org/en/docs/
 
 ### Community
+
 - **Coolify Discord**: https://coolify.io/discord
 - **GitHub Issues**: https://github.com/coollabsio/coolify/issues
 
 ### Monitoring Tools
+
 - **Portainer**: Container management UI
 - **Grafana**: Metrics dashboard
 - **Sentry**: Error tracking

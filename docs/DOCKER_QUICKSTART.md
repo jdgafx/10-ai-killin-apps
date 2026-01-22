@@ -1,8 +1,16 @@
 # Docker Deployment Quick Start
 
-## 🚀 Quick Deploy (5 minutes)
+> **NOTE**: Cloudflare Pages is now the primary deployment platform.
+> See [DEPLOYMENT.md](../DEPLOYMENT.md) for current deployment instructions.
+>
+> This guide remains available for local development and self-hosted deployments.
+
+---
+
+## Quick Deploy (5 minutes)
 
 ### 1. Prerequisites Check
+
 ```bash
 # Verify Docker is installed
 docker --version
@@ -13,6 +21,7 @@ pwd  # Should show: /path/to/10-ai-killin-apps
 ```
 
 ### 2. Environment Setup
+
 ```bash
 # Copy environment template
 cp .env.example .env
@@ -24,12 +33,14 @@ vim .env
 ```
 
 ### 3. Deploy All Applications
+
 ```bash
 # One-command deployment
 ./scripts/docker-deploy.sh
 ```
 
 **That's it!** All 10 apps will be available at:
+
 - http://localhost:8001 - AI Code Reviewer
 - http://localhost:8002 - Document Chat
 - http://localhost:8003 - Image Generator
@@ -46,21 +57,25 @@ vim .env
 ## 📋 Alternative Deployment Methods
 
 ### Deploy Single Application
+
 ```bash
 ./scripts/docker-deploy.sh --single app-01-ai-code-reviewer
 ```
 
 ### Build Without Deploying
+
 ```bash
 ./scripts/docker-deploy.sh --build-only
 ```
 
 ### Deploy Without Building (if images exist)
+
 ```bash
 ./scripts/docker-deploy.sh --deploy-only
 ```
 
 ### Push to Docker Registry
+
 ```bash
 # Set registry URL in .env or pass as argument
 ./scripts/docker-deploy.sh --push --registry registry.example.com
@@ -71,11 +86,13 @@ vim .env
 ## 🛠️ Common Commands
 
 ### View Running Containers
+
 ```bash
 docker-compose ps
 ```
 
 ### View Logs
+
 ```bash
 # All applications
 docker-compose logs -f
@@ -88,6 +105,7 @@ docker-compose logs --tail=100 app-02-document-chat
 ```
 
 ### Restart Application
+
 ```bash
 # Restart all
 docker-compose restart
@@ -97,16 +115,19 @@ docker-compose restart app-01-ai-code-reviewer
 ```
 
 ### Stop All Applications
+
 ```bash
 docker-compose down
 ```
 
 ### Stop and Remove Volumes
+
 ```bash
 docker-compose down -v
 ```
 
 ### Rebuild Application
+
 ```bash
 # Rebuild all
 docker-compose build --no-cache
@@ -120,6 +141,7 @@ docker-compose build --no-cache app-01-ai-code-reviewer
 ## 🔍 Health Checks
 
 ### Manual Health Check
+
 ```bash
 # Check all apps (8001-8010)
 for port in {8001..8010}; do
@@ -129,11 +151,13 @@ done
 ```
 
 ### Container Status
+
 ```bash
 docker-compose ps
 ```
 
 ### Resource Usage
+
 ```bash
 docker stats
 ```
@@ -143,6 +167,7 @@ docker stats
 ## 🐛 Troubleshooting
 
 ### Port Already in Use
+
 ```bash
 # Find process using port
 lsof -ti:8001
@@ -152,6 +177,7 @@ lsof -ti:8001 | xargs kill -9
 ```
 
 ### Build Fails
+
 ```bash
 # Clean Docker cache
 docker system prune -a
@@ -161,6 +187,7 @@ docker-compose build --no-cache
 ```
 
 ### Container Won't Start
+
 ```bash
 # Check logs
 docker-compose logs app-01-ai-code-reviewer
@@ -170,6 +197,7 @@ docker-compose config
 ```
 
 ### Out of Memory
+
 ```bash
 # Check Docker memory limits
 docker system info | grep -i memory
@@ -222,9 +250,11 @@ docker system info | grep -i memory
 ## 🎯 Production Deployment
 
 For production deployment with Coolify, see:
+
 - **[docs/COOLIFY_DEPLOYMENT.md](docs/COOLIFY_DEPLOYMENT.md)** - Complete Coolify guide
 
 For other platforms:
+
 - **GitHub Pages**: See `.github/workflows/deploy.yml`
 - **Vercel**: See `vercel.json` in each app
 - **AWS/Azure/GCP**: Use the Docker images created by this setup
@@ -233,12 +263,14 @@ For other platforms:
 
 ## 📞 Support
 
-**Issues?** 
+**Issues?**
+
 - Check logs: `docker-compose logs -f [service]`
 - Review docs: `docs/COOLIFY_DEPLOYMENT.md`
 - GitHub Issues: [Create an issue](https://github.com/your-username/ai-portfolio-monorepo/issues)
 
 **Performance?**
+
 - Monitor resources: `docker stats`
 - Optimize images: Already using multi-stage builds
 - Scale horizontally: `docker-compose up -d --scale app-01=3`

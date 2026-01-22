@@ -66,46 +66,50 @@ export default function App() {
     : documents.filter(doc => doc.category === activeCategory)
 
   return (
-    <div className="min-h-screen bg-stone-100">
+    <div className="min-h-screen bg-gradient-to-br from-stone-100 to-amber-50">
       <div className="flex">
         {/* Left Sidebar - Library navigation */}
-        <div className="w-64 bg-amber-100 border-r-4 border-amber-700 min-h-screen p-6">
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-2">
-              <BookOpen className="w-8 h-8 text-amber-700" />
-              <h1 className="text-2xl font-bold text-amber-900">Knowledge Base</h1>
+        <div className="w-72 bg-gradient-to-b from-amber-100 to-amber-200 border-r-4 border-amber-700 min-h-screen p-7 shadow-2xl">
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-amber-700 to-amber-900 rounded-xl flex items-center justify-center shadow-lg shadow-amber-700/50 transition-all duration-300 hover:scale-110">
+                <BookOpen className="w-7 h-7 text-amber-100" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-amber-900">Knowledge Base</h1>
+              </div>
             </div>
-            <p className="text-xs text-amber-700 uppercase tracking-wide">Library System</p>
+            <p className="text-xs text-amber-700 uppercase tracking-wide font-bold">RAG Library System</p>
           </div>
 
           {/* Navigation */}
-          <div className="space-y-2 mb-8">
-            <div className="flex items-center gap-2 px-3 py-2 bg-amber-700 text-white rounded font-semibold">
-              <Home className="w-4 h-4" />
+          <div className="space-y-3 mb-10">
+            <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-amber-700 to-amber-800 text-white rounded-xl font-bold shadow-lg shadow-amber-700/50 transition-all duration-300 hover:scale-105">
+              <Home className="w-5 h-5" />
               <span>Home</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 text-amber-800 hover:bg-amber-200 rounded cursor-pointer">
-              <Library className="w-4 h-4" />
+            <div className="flex items-center gap-3 px-4 py-3 text-amber-800 hover:bg-amber-200 rounded-xl cursor-pointer transition-all duration-300 hover:scale-105 font-semibold">
+              <Library className="w-5 h-5" />
               <span>Collections</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 text-amber-800 hover:bg-amber-200 rounded cursor-pointer">
-              <Archive className="w-4 h-4" />
+            <div className="flex items-center gap-3 px-4 py-3 text-amber-800 hover:bg-amber-200 rounded-xl cursor-pointer transition-all duration-300 hover:scale-105 font-semibold">
+              <Archive className="w-5 h-5" />
               <span>Archives</span>
             </div>
           </div>
 
           {/* Categories */}
-          <div className="mb-6">
-            <h3 className="text-xs uppercase tracking-wide text-amber-700 font-bold mb-3">Categories</h3>
-            <div className="space-y-1">
+          <div className="mb-8">
+            <h3 className="text-xs uppercase tracking-wide text-amber-700 font-bold mb-4">Categories</h3>
+            <div className="space-y-2">
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`w-full text-left px-3 py-2 rounded transition-colors ${
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 ${
                     activeCategory === cat
-                      ? 'bg-yellow-600 text-white font-semibold'
-                      : 'text-amber-800 hover:bg-amber-200'
+                      ? 'bg-gradient-to-r from-yellow-600 to-amber-600 text-white font-bold shadow-lg shadow-yellow-600/50 scale-105'
+                      : 'text-amber-800 hover:bg-amber-200 hover:scale-105 font-semibold'
                   }`}
                 >
                   {cat}
@@ -115,9 +119,9 @@ export default function App() {
           </div>
 
           {/* Stats */}
-          <div className="bg-white border-2 border-amber-700 rounded p-4">
-            <div className="text-3xl font-bold text-amber-700">{documents.length}</div>
-            <div className="text-xs uppercase tracking-wide text-amber-600">Total Documents</div>
+          <div className="bg-white border-4 border-amber-700 rounded-xl p-6 shadow-xl transition-all duration-300 hover:scale-105">
+            <div className="text-5xl font-bold bg-gradient-to-r from-amber-700 to-amber-900 bg-clip-text text-transparent">{documents.length}</div>
+            <div className="text-xs uppercase tracking-wide text-amber-600 font-bold mt-2">Total Documents</div>
           </div>
         </div>
 

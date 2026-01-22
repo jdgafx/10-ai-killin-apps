@@ -1,18 +1,16 @@
-/**
- * Unified AI Provider Layer
- * Supports MiniMax, Google Gemini, and DeepSeek
- */
+export type {
+  Message,
+  AIResponse,
+  AIProvider,
+  AIProviderConfig,
+  TaskType,
+  ChatOptions,
+  Env,
+} from "./types/ai";
 
-// Provider types
-export type { AIProvider, ChatMessage, ChatResponse } from './types'
+export { MiniMaxProvider } from "./providers/minimax";
+export { AnthropicProvider } from "./providers/anthropic";
+export { GeminiProvider } from "./providers/gemini";
+export { DeepSeekProvider } from "./providers/deepseek";
 
-// Provider implementations
-export * from './minimax'
-export * from './gemini'
-export * from './deepseek'
-
-// Configuration
-export { AI_PROVIDERS, AI_MODELS, CONFIG } from './config'
-
-// Hooks
-export { useAIProvider } from './hooks/useAIProvider'
+export { AIRouter, createAIRouter } from "./ai-router";

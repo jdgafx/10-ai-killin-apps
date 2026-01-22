@@ -69,44 +69,44 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-950 to-blue-900">
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-8">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-5xl font-bold text-cyan-400 mb-2 tracking-wider">
+        <div className="mb-8 animate-in fade-in duration-700">
+          <h1 className="text-6xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-3 tracking-wider">
             AGENT ORCHESTRATOR
           </h1>
-          <p className="text-cyan-300/60 text-sm uppercase tracking-widest">Network Coordination System</p>
+          <p className="text-cyan-300/70 text-base uppercase tracking-widest backdrop-blur-lg bg-cyan-500/20 inline-block px-4 py-2 rounded-full border border-cyan-400/30">Network Coordination System</p>
         </div>
 
         {/* Control Bar */}
-        <div className="bg-blue-900/50 border border-cyan-400/30 rounded p-4 mb-6 backdrop-blur-sm">
+        <div className="backdrop-blur-lg bg-blue-900/50 border-2 border-cyan-400/30 rounded-xl p-6 mb-8 shadow-2xl shadow-cyan-500/20 transition-all duration-300 hover:border-cyan-400/50">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Radio className="w-4 h-4 text-cyan-400 animate-pulse" />
-                <span className="text-cyan-300 text-sm font-mono">
-                  {isRunning ? 'SYSTEM ACTIVE' : 'SYSTEM IDLE'}
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-3 backdrop-blur-lg bg-cyan-500/20 px-5 py-3 rounded-xl border border-cyan-400/30">
+                <Radio className="w-5 h-5 text-cyan-400 animate-pulse" />
+                <span className="text-cyan-300 text-base font-mono font-bold uppercase tracking-wider">
+                  {isRunning ? '● SYSTEM ACTIVE' : '○ SYSTEM IDLE'}
                 </span>
               </div>
-              <div className="text-teal-300 text-sm font-mono">
-                Agents: {agents.length}
+              <div className="text-teal-300 text-base font-mono backdrop-blur-lg bg-teal-500/20 px-5 py-3 rounded-xl border border-teal-400/30">
+                <span className="font-bold">Agents:</span> {agents.length}
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               <button
                 onClick={handleStart}
                 disabled={isRunning}
-                className="px-6 py-2 bg-cyan-400 text-blue-950 font-bold rounded hover:bg-cyan-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                className="px-8 py-3 bg-gradient-to-r from-cyan-400 to-blue-500 text-blue-950 font-bold rounded-xl hover:from-cyan-300 hover:to-blue-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center gap-3 shadow-xl shadow-cyan-500/50 hover:scale-105"
               >
-                <PlayCircle className="w-4 h-4" />
-                START
+                <PlayCircle className="w-5 h-5" />
+                START SYSTEM
               </button>
               <button
                 onClick={handleReset}
                 disabled={isRunning}
-                className="px-4 py-2 bg-blue-800 border border-cyan-400/50 text-cyan-400 rounded hover:bg-blue-700 disabled:opacity-50 transition-all"
+                className="px-6 py-3 backdrop-blur-lg bg-blue-800 border-2 border-cyan-400/50 text-cyan-400 rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-all duration-300 hover:scale-105"
               >
-                <RotateCcw className="w-4 h-4" />
+                <RotateCcw className="w-5 h-5" />
               </button>
             </div>
           </div>
@@ -222,3 +222,4 @@ export default function App() {
     </div>
   )
 }
+

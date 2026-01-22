@@ -70,34 +70,35 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
       {/* Center Column - Google-like minimal layout */}
-      <div className="max-w-3xl mx-auto px-4">
+      <div className="max-w-4xl mx-auto px-6">
         {/* Logo/Header - centered top */}
-        <div className="pt-24 mb-8 text-center">
-          <h1 className="text-5xl font-light text-gray-800 mb-2">
+        <div className="pt-32 mb-12 text-center animate-in fade-in duration-700">
+          <h1 className="text-7xl font-light bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent mb-4 tracking-tight">
             Semantic Search
           </h1>
+          <p className="text-slate-600 text-lg">Find exactly what you're looking for</p>
         </div>
 
         {/* Search Bar - centered, prominent */}
-        <div className="mb-8">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <div className="mb-10">
+          <div className="relative group">
+            <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 w-6 h-6 text-blue-500 transition-all duration-300 group-hover:scale-110" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
               placeholder="Search documents..."
-              className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-full hover:shadow-md focus:shadow-md focus:outline-none transition-shadow text-base"
+              className="w-full pl-16 pr-6 py-5 border-2 border-slate-300 rounded-full hover:shadow-xl focus:shadow-2xl focus:outline-none focus:border-blue-500 transition-all duration-300 text-lg"
             />
           </div>
-          <div className="flex justify-center gap-3 mt-6">
+          <div className="flex justify-center gap-4 mt-8">
             <button
               onClick={handleSearch}
               disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 transition-colors text-sm"
+              className="px-8 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-full hover:from-blue-700 hover:to-cyan-600 disabled:opacity-50 transition-all duration-300 shadow-lg shadow-blue-500/50 hover:scale-105 font-medium"
             >
               {loading ? 'Searching...' : 'Search'}
             </button>
@@ -106,7 +107,7 @@ function App() {
                 setSearchQuery('')
                 setSearchResults([])
               }}
-              className="px-6 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
+              className="px-8 py-3 backdrop-blur-lg bg-slate-100 text-slate-700 rounded-full hover:bg-slate-200 transition-all duration-300 hover:scale-105 font-medium"
             >
               Clear
             </button>
@@ -115,23 +116,25 @@ function App() {
 
         {/* Results Info */}
         {searchResults.length > 0 && (
-          <div className="text-sm text-gray-600 mb-4 pl-1">
-            About {searchResults.length} results
+          <div className="text-base text-slate-600 mb-6 pl-2">
+            About <span className="font-semibold text-blue-600">{searchResults.length}</span> results
           </div>
         )}
 
         {/* Results List - simple cards */}
-        <div className="space-y-6 pb-12">
+        <div className="space-y-8 pb-16">
           {searchResults.map((doc) => (
-            <div key={doc.id} className="group">
-              <div className="flex items-start gap-3 mb-1">
-                <Globe className="w-4 h-4 text-gray-500 mt-1 flex-shrink-0" />
-                <div className="text-xs text-gray-600">{doc.url}</div>
+            <div key={doc.id} className="group transition-all duration-300 hover:translate-x-2">
+              <div className="flex items-start gap-4 mb-2">
+                <Globe className="w-5 h-5 text-blue-500 mt-1.5 flex-shrink-0 transition-all duration-300 group-hover:scale-110" />
+                <div className="text-sm text-slate-600 flex items-center gap-2">
+                  <span>{doc.url}</span>
+                </div>
               </div>
-              <h3 className="text-xl text-blue-600 hover:underline cursor-pointer mb-1 pl-7">
+              <h3 className="text-2xl text-blue-600 hover:underline cursor-pointer mb-2 pl-9 font-medium transition-colors duration-300 hover:text-cyan-500">
                 {doc.title}
               </h3>
-              <p className="text-sm text-gray-600 leading-relaxed pl-7">
+              <p className="text-base text-slate-700 leading-relaxed pl-9">
                 {doc.content}
               </p>
             </div>

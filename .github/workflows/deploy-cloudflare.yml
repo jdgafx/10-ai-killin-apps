@@ -1,0 +1,135 @@
+name: Deploy All Apps to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      deploy-all:
+        description: 'Deploy all apps'
+        required: false
+        default: 'true'
+        type: boolean
+
+jobs:
+  deploy-app-01:
+    name: Deploy RAG Chat
+    uses: ./.github/workflows/deploy-single-app.yml
+    with:
+      app-name: app-01-rag-chat
+      project-name: app-01-rag-chat
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  deploy-app-02:
+    name: Deploy Research Agent
+    uses: ./.github/workflows/deploy-single-app.yml
+    with:
+      app-name: app-02-research-agent
+      project-name: app-02-research-agent
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  deploy-app-03:
+    name: Deploy UI Builder
+    uses: ./.github/workflows/deploy-single-app.yml
+    with:
+      app-name: app-03-ui-builder
+      project-name: app-03-ui-builder
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  deploy-app-04:
+    name: Deploy SQL Generator
+    uses: ./.github/workflows/deploy-single-app.yml
+    with:
+      app-name: app-04-sql-generator
+      project-name: app-04-sql-generator
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  deploy-app-05:
+    name: Deploy Voice Chat
+    uses: ./.github/workflows/deploy-single-app.yml
+    with:
+      app-name: app-05-voice-chat
+      project-name: app-05-voice-chat
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  deploy-app-06:
+    name: Deploy Doc Processor
+    uses: ./.github/workflows/deploy-single-app.yml
+    with:
+      app-name: app-06-doc-processor
+      project-name: app-06-doc-processor
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  deploy-app-07:
+    name: Deploy Semantic Search
+    uses: ./.github/workflows/deploy-single-app.yml
+    with:
+      app-name: app-07-semantic-search
+      project-name: app-07-semantic-search
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  deploy-app-08:
+    name: Deploy Content Generator
+    uses: ./.github/workflows/deploy-single-app.yml
+    with:
+      app-name: app-08-content-generator
+      project-name: app-08-content-generator
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  deploy-app-09:
+    name: Deploy Agent Orchestrator
+    uses: ./.github/workflows/deploy-single-app.yml
+    with:
+      app-name: app-09-agent-orchestrator
+      project-name: app-09-agent-orchestrator
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  deploy-app-10:
+    name: Deploy RAG Knowledge Base
+    uses: ./.github/workflows/deploy-single-app.yml
+    with:
+      app-name: app-10-rag-knowledge-base
+      project-name: app-10-rag-knowledge-base
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  summary:
+    name: Deployment Summary
+    needs: [deploy-app-01, deploy-app-02, deploy-app-03, deploy-app-04, deploy-app-05, deploy-app-06, deploy-app-07, deploy-app-08, deploy-app-09, deploy-app-10]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summary
+        run: |
+          echo "🎉 All 10 apps successfully deployed to Cloudflare Pages!"
+          echo ""
+          echo "📦 Deployed Apps:"
+          echo "  1. RAG Chat: https://app-01-rag-chat.pages.dev"
+          echo "  2. Research Agent: https://app-02-research-agent.pages.dev"
+          echo "  3. UI Builder: https://app-03-ui-builder.pages.dev"
+          echo "  4. SQL Generator: https://app-04-sql-generator.pages.dev"
+          echo "  5. Voice Chat: https://app-05-voice-chat.pages.dev"
+          echo "  6. Doc Processor: https://app-06-doc-processor.pages.dev"
+          echo "  7. Semantic Search: https://app-07-semantic-search.pages.dev"
+          echo "  8. Content Generator: https://app-08-content-generator.pages.dev"
+          echo "  9. Agent Orchestrator: https://app-09-agent-orchestrator.pages.dev"
+          echo "  10. RAG Knowledge Base: https://app-10-rag-knowledge-base.pages.dev"

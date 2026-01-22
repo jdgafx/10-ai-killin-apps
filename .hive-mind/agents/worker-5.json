@@ -1,0 +1,24 @@
+{
+  "agent_id": "worker-5",
+  "role": "Frontend-Integration-Specialist",
+  "status": "active",
+  "created": "2026-01-21T18:17:30Z",
+  "task": "Redesign all 10 apps with premium templates + add real API calls",
+  "design_inspiration": [
+    "app-01: ChatGPT, Linear, Height",
+    "app-02: Linear Analytics, Superhuman",
+    "app-03: Framer, Figma, Webflow",
+    "app-04: TablePlus, DataGrip, Retool",
+    "app-05: Spotify, Apple Music, Discord",
+    "app-06: Dropbox, Google Drive, Notion",
+    "app-07: Google, Algolia, Perplexity",
+    "app-08: Medium, Substack, Ghost",
+    "app-09: Datadog, Grafana, Linear",
+    "app-10: Notion, Obsidian, Roam"
+  ],
+  "changes_required": {
+    "design": "Premium templates with glassmorphism, animations, hover effects",
+    "api_calls": "Replace setTimeout with real fetch() to /api/* endpoints",
+    "lovable_2.0": "Maintain Tailwind CSS only, no inline styles"
+  }
+}

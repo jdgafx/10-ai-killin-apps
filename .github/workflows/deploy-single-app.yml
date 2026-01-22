@@ -1,0 +1,61 @@
+name: Deploy Single App to Cloudflare Pages
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        description: 'App directory name (e.g., app-01-rag-chat)'
+        required: true
+        type: string
+      project-name:
+        description: 'Cloudflare Pages project name'
+        required: true
+        type: string
+    secrets:
+      CLOUDFLARE_API_TOKEN:
+        required: true
+      CLOUDFLARE_ACCOUNT_ID:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy ${{ inputs.app-name }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: |
+          npm ci
+          cd apps/${{ inputs.app-name }}
+          npm ci
+
+      - name: Build App
+        run: |
+          cd apps/${{ inputs.app-name }}
+          npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ${{ inputs.project-name }}
+          directory: apps/${{ inputs.app-name }}/dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deployment Summary
+        run: |
+          echo "✅ Successfully deployed ${{ inputs.app-name }} to Cloudflare Pages"
+          echo "📦 Project: ${{ inputs.project-name }}"
+          echo "🔗 URL: https://${{ inputs.project-name }}.pages.dev"

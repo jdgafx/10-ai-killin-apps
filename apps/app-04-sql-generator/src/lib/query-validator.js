@@ -45,7 +45,7 @@ export function validateSQL(query) {
     /;\s*DELETE/i,
     /'\s*OR\s*'1'\s*=\s*'1/i,
     /--\s*$/,
-    /\/\*.*\*\//,
+    /\/\*[\s\S]*?\*\//,
   ]
 
   for (const pattern of injectionPatterns) {

@@ -23,16 +23,20 @@ function App() {
   return (
     <div className="h-screen bg-white flex flex-col overflow-hidden">
       {/* Top Bar - VS Code Style */}
-      <div className="bg-gray-800 text-white px-4 py-2 flex items-center justify-between border-b border-gray-700">
-        <div className="flex items-center gap-3">
-          <Code2 className="w-5 h-5 text-emerald-400" />
-          <span className="font-mono text-sm font-semibold">UI Builder Studio</span>
-          <span className="text-xs text-gray-400 font-mono">v1.0.0</span>
+      <div className="bg-gradient-to-r from-gray-800 to-gray-900 text-white px-6 py-3 flex items-center justify-between border-b border-emerald-500/30 shadow-lg">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-500/50 transition-all duration-300 hover:scale-110">
+            <Code2 className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <span className="font-mono text-lg font-bold bg-gradient-to-r from-emerald-500 to-purple-500 bg-clip-text text-transparent">UI Builder Studio</span>
+            <span className="text-xs text-slate-400 font-mono ml-3">v1.0.0 PRO</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 text-xs font-mono">
-            <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-            <span className="text-emerald-400">READY</span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 text-xs font-mono backdrop-blur-lg bg-white/10 px-4 py-2 rounded-full border border-emerald-500/30">
+            <div className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse shadow-lg shadow-emerald-400/50"></div>
+            <span className="text-emerald-400 uppercase tracking-wider font-semibold">● READY</span>
           </div>
         </div>
       </div>
@@ -40,20 +44,20 @@ function App() {
       {/* Main Split View */}
       <div className="flex-1 flex overflow-hidden">
         {/* LEFT PANEL - Component List & Generator */}
-        <div className="w-80 bg-gray-800 border-r border-gray-700 flex flex-col overflow-hidden">
+        <div className="w-80 bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700 flex flex-col overflow-hidden shadow-2xl">
           {/* Panel Header */}
-          <div className="bg-gray-900 px-4 py-3 border-b border-gray-700">
-            <div className="flex items-center gap-2 text-white">
-              <Layers className="w-4 h-4 text-emerald-400" />
-              <span className="font-mono text-sm font-semibold uppercase tracking-wide">Explorer</span>
+          <div className="bg-gray-900 px-5 py-4 border-b border-emerald-500/30 backdrop-blur-lg">
+            <div className="flex items-center gap-3 text-white">
+              <Layers className="w-5 h-5 text-emerald-400 animate-pulse" />
+              <span className="font-mono text-base font-bold uppercase tracking-widest bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">Explorer</span>
             </div>
           </div>
 
           {/* Generator Section */}
-          <div className="p-4 border-b border-gray-700">
-            <div className="mb-3 flex items-center gap-2">
-              <Terminal className="w-4 h-4 text-green-400" />
-              <span className="text-xs font-mono text-gray-300 font-semibold uppercase">Generate</span>
+          <div className="p-5 border-b border-gray-700 backdrop-blur-lg bg-white/5">
+            <div className="mb-4 flex items-center gap-2">
+              <Terminal className="w-5 h-5 text-emerald-400 animate-pulse" />
+              <span className="text-xs font-mono text-emerald-300 font-bold uppercase tracking-wider">Generate Component</span>
             </div>
             <ComponentGenerator 
               onGenerate={handleGenerate}
@@ -63,11 +67,11 @@ function App() {
 
           {/* Template List */}
           <div className="flex-1 overflow-y-auto p-4">
-            <div className="mb-3 flex items-center gap-2">
-              <FileCode className="w-4 h-4 text-emerald-400" />
-              <span className="text-xs font-mono text-gray-300 font-semibold uppercase">Templates</span>
+            <div className="mb-4 flex items-center gap-2">
+              <FileCode className="w-5 h-5 text-purple-400" />
+              <span className="text-xs font-mono text-purple-300 font-bold uppercase tracking-wider">Templates</span>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               {templates.map((template) => (
                 <button
                   key={template.key}
@@ -77,12 +81,12 @@ function App() {
                     example: template.example,
                     dependencies: ['react'],
                   })}
-                  className="w-full text-left px-3 py-2 text-gray-300 hover:bg-gray-700 rounded font-mono text-xs transition-colors group flex items-center gap-2"
+                  className="w-full text-left px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-emerald-500/20 hover:to-purple-500/20 rounded-lg font-mono text-xs transition-all duration-300 hover:scale-105 group flex items-center gap-3 border border-gray-700 hover:border-emerald-500/50 shadow-sm hover:shadow-lg hover:shadow-emerald-500/20"
                 >
-                  <Code2 className="w-3 h-3 text-emerald-400 opacity-60 group-hover:opacity-100" />
+                  <Code2 className="w-4 h-4 text-emerald-400 opacity-70 group-hover:opacity-100 transition-opacity" />
                   <div className="flex-1 min-w-0">
-                    <div className="truncate font-semibold">{template.name}</div>
-                    <div className="text-[10px] text-gray-500 truncate">{template.description}</div>
+                    <div className="truncate font-bold text-white group-hover:text-emerald-300 transition-colors">{template.name}</div>
+                    <div className="text-[10px] text-gray-500 truncate group-hover:text-purple-400 transition-colors">{template.description}</div>
                   </div>
                 </button>
               ))}
@@ -93,33 +97,33 @@ function App() {
         {/* RIGHT PANEL - Preview/Code Editor */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Tab Bar */}
-          <div className="bg-gray-800 border-b border-gray-700 flex items-center">
+          <div className="bg-gray-800 border-b border-gray-700 flex items-center backdrop-blur-lg">
             <button
               onClick={() => setActiveTab('preview')}
-              className={`px-6 py-2.5 font-mono text-xs font-semibold flex items-center gap-2 border-r border-gray-700 transition-colors ${
+              className={`px-8 py-3 font-mono text-sm font-bold flex items-center gap-2 border-r border-gray-700 transition-all duration-300 ${
                 activeTab === 'preview'
-                  ? 'bg-white text-gray-900'
+                  ? 'bg-gradient-to-b from-white to-gray-100 text-gray-900 shadow-lg'
                   : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
               }`}
             >
-              <Eye className="w-4 h-4" />
-              <span>PREVIEW</span>
+              <Eye className="w-5 h-5" />
+              <span className="uppercase tracking-wider">PREVIEW</span>
             </button>
             <button
               onClick={() => setActiveTab('code')}
-              className={`px-6 py-2.5 font-mono text-xs font-semibold flex items-center gap-2 border-r border-gray-700 transition-colors ${
+              className={`px-8 py-3 font-mono text-sm font-bold flex items-center gap-2 border-r border-gray-700 transition-all duration-300 ${
                 activeTab === 'code'
-                  ? 'bg-gray-900 text-emerald-400'
+                  ? 'bg-gray-900 text-emerald-400 shadow-lg shadow-emerald-500/20 border-emerald-500/50'
                   : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
               }`}
             >
-              <Code2 className="w-4 h-4" />
-              <span>CODE</span>
+              <Code2 className="w-5 h-5" />
+              <span className="uppercase tracking-wider">CODE</span>
             </button>
             {generatedComponent && (
-              <div className="ml-auto px-4 flex items-center gap-2">
-                <Play className="w-3 h-3 text-green-400" />
-                <span className="text-[10px] font-mono text-green-400 font-semibold">COMPILED</span>
+              <div className="ml-auto px-6 flex items-center gap-2 backdrop-blur-lg bg-emerald-500/20 mr-4 py-2 rounded-full border border-emerald-500/30">
+                <Play className="w-4 h-4 text-emerald-400 animate-pulse" />
+                <span className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider">● COMPILED</span>
               </div>
             )}
           </div>

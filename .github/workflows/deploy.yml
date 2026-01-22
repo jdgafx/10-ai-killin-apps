@@ -1,0 +1,65 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  deploy-apps:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app:
+          - name: app-01-rag-chat
+            project: app-01-rag-chat
+          - name: app-02-research-agent
+            project: app-02-research-agent
+          - name: app-03-ui-builder
+            project: app-03-ui-builder
+          - name: app-04-sql-generator
+            project: app-04-sql-generator
+          - name: app-05-voice-chat
+            project: app-05-voice-chat
+          - name: app-06-doc-processor
+            project: app-06-doc-processor
+          - name: app-07-semantic-search
+            project: app-07-semantic-search
+          - name: app-08-content-generator
+            project: app-08-content-generator
+          - name: app-09-agent-orchestrator
+            project: app-09-agent-orchestrator
+          - name: app-10-rag-knowledge-base
+            project: app-10-rag-knowledge-base
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: apps/${{ matrix.app.name }}
+
+      - name: Build
+        run: npm run build
+        working-directory: apps/${{ matrix.app.name }}
+
+      - name: Deploy to Cloudflare Pages
+        if: github.event_name == 'push'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ matrix.app.project }}
+          workingDirectory: apps/${{ matrix.app.name }}
+        env:
+          MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
