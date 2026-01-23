@@ -1,43 +1,87 @@
-import { useState } from 'react'
-import { Wand2, Loader } from 'lucide-react'
-import { getTemplateByName, COMPONENT_TEMPLATES } from '../lib/component-templates'
+import { useState } from "react";
+import { Wand2, Loader } from "lucide-react";
+import {
+  getTemplateByName,
+  COMPONENT_TEMPLATES,
+} from "../lib/component-templates";
 
 export default function ComponentGenerator({ onGenerate, isLoading }) {
-  const [description, setDescription] = useState('')
-  const [componentType, setComponentType] = useState('')
-  const [includeProps, setIncludeProps] = useState(true)
-  const [includeStyles, setIncludeStyles] = useState(true)
+  const [description, setDescription] = useState("");
+  const [componentType, setComponentType] = useState("");
+  const [includeProps, setIncludeProps] = useState(true);
+  const [includeStyles, setIncludeStyles] = useState(true);
 
   const handleGenerate = async () => {
-    if (!description.trim() || isLoading) return
+    if (!description.trim() || isLoading) return;
 
     // Check if it matches a template
-    const template = getTemplateByName(componentType || description)
-    
+    const template = getTemplateByName(componentType || description);
+
     if (template) {
       onGenerate({
         code: template.code,
         description: template.description,
         example: template.example,
-        dependencies: ['react', 'lucide-react'],
-      })
-      return
+        dependencies: ["react", "lucide-react"],
+      });
+      return;
     }
 
-    // Generate custom component
-    const generatedCode = generateComponent(description, {
-      includeProps,
-      includeStyles,
-      type: componentType,
-    })
+    // Generate custom component using real AI
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: `Generate a React component based on this description: ${description}
 
-    onGenerate({
-      code: generatedCode,
-      description: `Custom ${componentType || 'component'} generated from: ${description}`,
-      example: `<CustomComponent />`,
-      dependencies: ['react', 'lucide-react'],
-    })
-  }
+Component Type: ${componentType || "auto-detect"}
+Include Props: ${includeProps}
+Use Tailwind CSS: ${includeStyles}
+
+Requirements:
+1. Export as default function
+2. Use modern React patterns (hooks, functional components)
+3. Include Tailwind CSS classes for styling
+4. Add prop validation comments
+5. Include example usage in JSDoc comment
+6. Make it production-ready
+
+Return ONLY the component code, no explanations.`,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`AI generation failed: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const generatedCode =
+        data.content || data.message || "Error generating component";
+
+      onGenerate({
+        code: generatedCode,
+        description: `AI-generated ${componentType || "component"}: ${description}`,
+        example: `<CustomComponent />`,
+        dependencies: ["react", "lucide-react"],
+      });
+    } catch (error) {
+      console.error("Component generation error:", error);
+      // Fallback to basic generation if API fails
+      const fallbackCode = generateComponent(description, {
+        includeProps,
+        includeStyles,
+        type: componentType,
+      });
+
+      onGenerate({
+        code: fallbackCode,
+        description: `Basic ${componentType || "component"} (AI unavailable): ${description}`,
+        example: `<CustomComponent />`,
+        dependencies: ["react", "lucide-react"],
+      });
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -98,7 +142,9 @@ export default function ComponentGenerator({ onGenerate, isLoading }) {
               disabled={isLoading}
               className="w-4 h-4 text-purple-600"
             />
-            <span className="text-sm text-gray-700">Include Tailwind Styles</span>
+            <span className="text-sm text-gray-700">
+              Include Tailwind Styles
+            </span>
           </label>
         </div>
       </div>
@@ -121,22 +167,24 @@ export default function ComponentGenerator({ onGenerate, isLoading }) {
         )}
       </button>
     </div>
-  )
+  );
 }
 
 function generateComponent(description, options) {
-  const { includeProps, includeStyles, type } = options
-  
+  const { includeProps, includeStyles, type } = options;
+
   // Simple component generation
-  const componentName = type ? type.charAt(0).toUpperCase() + type.slice(1) : 'CustomComponent'
-  
-  const propsSignature = includeProps 
-    ? '{ children, className, ...props }' 
-    : '{ children }'
-  
+  const componentName = type
+    ? type.charAt(0).toUpperCase() + type.slice(1)
+    : "CustomComponent";
+
+  const propsSignature = includeProps
+    ? "{ children, className, ...props }"
+    : "{ children }";
+
   const styleClasses = includeStyles
-    ? 'className={`p-6 bg-white rounded-lg shadow-lg ${className || \'\'}`}'
-    : 'className={className}'
+    ? "className={`p-6 bg-white rounded-lg shadow-lg ${className || ''}`}"
+    : "className={className}";
 
   return `export default function ${componentName}(${propsSignature}) {
   return (
@@ -154,5 +202,5 @@ function generateComponent(description, options) {
       </div>
     </div>
   )
-}`
+}`;
 }

@@ -1,17 +1,18 @@
-/**
- * Shared UI Components Library
- * Reusable React components for all AI portfolio applications
- */
+export { Button, buttonVariants } from "./components/button";
+export type { ButtonProps } from "./components/button";
 
-export { default as Button } from './Button'
-export { default as Card } from './Card'
-export { default as Input } from './Input'
-export { default as Modal } from './Modal'
-export { default as Loader } from './Loader'
-export { default as Toast } from './Toast'
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "./components/card";
 
-// Export types
-export type { ButtonProps } from './Button'
-export type { CardProps } from './Card'
-export type { InputProps } from './Input'
-export type { ModalProps } from './Modal'
+export { Input } from "./components/input";
+export type { InputProps } from "./components/input";
+
+export { Loader } from "./components/loader";
+
+export { cn } from "./lib/utils";

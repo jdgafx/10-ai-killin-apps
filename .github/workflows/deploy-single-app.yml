@@ -45,13 +45,29 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Copy Functions to Dist
+      - name: Build Functions (Compile TS to JS)
         run: |
           cd apps/${{ inputs.app-name }}
           if [ -d "functions" ]; then
-            cp -r functions dist/
-            echo "✅ Functions copied to dist/"
-            ls -la dist/functions/
+            npm install -g esbuild
+            mkdir -p dist/functions/api
+            for file in functions/api/*.ts; do
+              if [ -f "$file" ]; then
+                filename=$(basename "$file" .ts)
+                esbuild "$file" \
+                  --bundle \
+                  --format=esm \
+                  --target=esnext \
+                  --platform=neutral \
+                  --conditions=workerd,worker,browser \
+                  --outfile="dist/functions/api/${filename}.js"
+                echo "✅ Compiled $file -> dist/functions/api/${filename}.js"
+              fi
+            done
+            echo "📁 Functions output:"
+            ls -la dist/functions/api/
+            echo "📄 Sample compiled output (first 30 lines):"
+            head -30 dist/functions/api/*.js || true
           else
             echo "ℹ️ No functions directory found"
           fi
