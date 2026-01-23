@@ -18,91 +18,100 @@ Response format (JSON only):
   "parameters": [1],
   "explanation": "This query retrieves all columns from the users table where the id matches the parameter",
   "warning": "Any caveats or performance considerations (or null)"
-}`
+}`;
 
 export async function generateSQL(question, schema) {
-  // Check for API key
-  const apiKey = import.meta.env.VITE_MINIMAX_API_KEY
-  if (!apiKey) {
-    throw new Error('MiniMax API key not configured. Please add VITE_MINIMAX_API_KEY to your .env file')
-  }
+  const schemaDescription = formatSchemaForAI(schema);
 
-  const schemaDescription = formatSchemaForAI(schema)
-  
-  const prompt = `Convert this natural language request to SQL:
+  const prompt = `${SQL_SYSTEM_PROMPT}
+
+Convert this natural language request to SQL:
 "${question}"
 
 Database Schema:
 ${schemaDescription}
 
-Generate SQL following the rules above. Return ONLY valid JSON.`
+Generate SQL following the rules above. Return ONLY valid JSON with fields: query, parameters, explanation, warning`;
 
   try {
-    const response = await fetch('https://api.minimax.chat/v1/text/chatcompletion_v2', {
-      method: 'POST',
+    const response = await fetch("/api/sql", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: 'abab6.5-chat',
-        messages: [
-          { role: 'system', content: SQL_SYSTEM_PROMPT },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.3,
-        max_tokens: 1000
-      })
-    })
+        query: prompt,
+        schema: schemaDescription,
+        database: "postgresql",
+      }),
+    });
 
     if (!response.ok) {
-      throw new Error(`API request failed: ${response.status} ${response.statusText}`)
+      throw new Error(
+        `API request failed: ${response.status} ${response.statusText}`,
+      );
     }
 
-    const data = await response.json()
-    const content = data.choices?.[0]?.message?.content || ''
-    
-    // Try to parse JSON response
+    const data = await response.json();
+
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
+    const content = data.sql || "";
+
     try {
-      // Extract JSON if wrapped in markdown code blocks
-      const jsonMatch = content.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/) || 
-                       content.match(/(\{[\s\S]*?\})/)
-      const jsonStr = jsonMatch ? jsonMatch[1] : content
-      return JSON.parse(jsonStr)
+      const jsonMatch =
+        content.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/) ||
+        content.match(/(\{[\s\S]*?\})/);
+      const jsonStr = jsonMatch ? jsonMatch[1] : content;
+      return JSON.parse(jsonStr);
     } catch (parseError) {
-      console.error('Failed to parse AI response:', content)
       return {
-        query: '-- Failed to generate SQL: Invalid response format',
+        query:
+          content
+            .split("\n")
+            .find(
+              (line) =>
+                line.includes("SELECT") ||
+                line.includes("INSERT") ||
+                line.includes("UPDATE") ||
+                line.includes("DELETE"),
+            ) || "-- No SQL found",
         parameters: [],
-        explanation: 'The AI response could not be parsed. Please try again.',
-        warning: 'Response parsing failed'
-      }
+        explanation: content.substring(0, 200),
+        warning: null,
+      };
     }
   } catch (error) {
-    console.error('SQL generation error:', error)
+    console.error("SQL generation error:", error);
     return {
-      query: '-- Failed to generate SQL',
+      query: "-- Failed to generate SQL",
       parameters: [],
-      explanation: error.message || 'An error occurred during generation',
-      warning: 'Generation failed'
-    }
+      explanation: error.message || "An error occurred during generation",
+      warning: "Generation failed",
+    };
   }
 }
 
 function formatSchemaForAI(schema) {
   if (!schema?.tables || schema.tables.length === 0) {
-    return 'No tables defined'
+    return "No tables defined";
   }
 
-  return schema.tables.map(table => {
-    const columns = table.columns.map(col => {
-      const parts = [col.name, col.type]
-      if (col.primaryKey) parts.push('PRIMARY KEY')
-      if (col.unique) parts.push('UNIQUE')
-      if (col.notNull) parts.push('NOT NULL')
-      return `  ${parts.join(' ')}`
-    }).join('\n')
+  return schema.tables
+    .map((table) => {
+      const columns = table.columns
+        .map((col) => {
+          const parts = [col.name, col.type];
+          if (col.primaryKey) parts.push("PRIMARY KEY");
+          if (col.unique) parts.push("UNIQUE");
+          if (col.notNull) parts.push("NOT NULL");
+          return `  ${parts.join(" ")}`;
+        })
+        .join("\n");
 
-    return `Table: ${table.name}\n${columns}`
-  }).join('\n\n')
+      return `Table: ${table.name}\n${columns}`;
+    })
+    .join("\n\n");
 }
